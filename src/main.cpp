@@ -27,9 +27,10 @@ void extractPath () {
     string currDirectory = "";
 
     if (path.at(i) == ':') {
-      currDirectory = path.substr(0, i + 1);
+      currDirectory = path.substr(0, i);
       path.erase(0, i + 1);
       pathDirectories.push_back(currDirectory);
+      i = 0;  // resets the index back to 0
     }
   }
 
