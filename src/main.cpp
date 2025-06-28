@@ -2,13 +2,17 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <filesystem>
+#include <algorithm>
+#include <functional>
 
 using namespace std;
+namespace fs = filesystem;
 
 // extracts the path and returns splitted directories in a vector
-void extractPath () {
+vector<string> extractPath () {
   // stores the directories from the path variables
-  vector<string> pathDirectories;
+  vector<string> paths;
 
   // extracting the path variable
   const char* envVariable = "PATH";
@@ -29,22 +33,66 @@ void extractPath () {
     if (path.at(i) == ':') {
       currDirectory = path.substr(0, i);
       path.erase(0, i + 1);
-      pathDirectories.push_back(currDirectory);
+      paths.push_back(currDirectory);
       i = 0;  // resets the index back to 0
     }
   }
+  return paths;
+}
 
-  for (const auto& dir : pathDirectories) {
-    cout << dir << endl;
+void searchPath (string targetFile) {
+
+  // FIXME: searches every single directory in the path for the given commands
+  // FIXME: might require a second parameter to accept the command being sought for
+
+  vector<string> paths = extractPath();
+
+  for (const auto& path : paths) {
+    try {
+      for (const auto& entry : fs::directory_iterator(path)) {
+          // File found
+          if (entry.is_regular_file() && entry.path().filename() == targetFile) {
+              // Get file permissions
+              fs::perms p = fs::status(entry.path()).permissions();
+
+              // Check for executable permissions for owner, group, or others
+              if ((p & fs::perms::owner_exec) != fs::perms::none ||
+                  (p & fs::perms::group_exec) != fs::perms::none ||
+                  (p & fs::perms::others_exec) != fs::perms::none)
+              {
+
+                string displayPath = string(entry.path()).substr(1, string(entry.path()).length());
+
+                cout << targetFile << " is " << displayPath << endl;
+              } else {
+                // continue searching if the file doesn't have exe permissions
+                  continue;
+              }
+              return; // Exit after finding and checking the file
+
+          }
+      }
+    }
+    catch (const fs::filesystem_error& e) {
+      // skip the ones which do not exist
+      continue;
+    }
   }
 }
 
-// void searchPath (vector<string> pathDirectories) {
+bool isValidCommand(string cmd) {
+  vector<string> commands = {
+    "cd", "ls", "echo", "exit", "pwd", "type", "mkdir", "rmdir", "touch",
+    "cp", "mv", "rm", "cat", "clear", "whoami", "man", "which", "grep",
+    "chmod", "chown", "find", "head", "tail", "diff", "history", "ps",
+    "kill", "top", "nano", "vi", "ssh", "scp", "tar", "gzip", "ping"
+  };
 
-//   // FIXME: searches every single directory in the path for the given commans
-//   // FIXME: might require a second parameter to accept the command being sought for
-// }
-
+  if (find(commands.begin(), commands.end(), cmd) != commands.end()) {
+    return true;
+  }
+  return false;
+}
 
 string extractCommand(const string& input) {
   int start = 0;
@@ -71,31 +119,44 @@ void type(string& input) {
   int sizeOfTypeStr = end - start;
 
   string typeArg = input.substr(start, sizeOfTypeStr);
-  string outputText = "";
+  //string outputText = "";
 
-  enum Types {echo, exit, type, invalid};
-  Types Type = invalid;
+  vector<string> builtIns {"echo", "exit", "type", "pwd", "cd"};
 
-  if (typeArg == "echo") Type = echo;
-  else if (typeArg == "exit") Type = exit;
-  else if (typeArg == "type") Type = type;
-
-  switch (Type) {
-    case echo:
-      outputText = "echo is a shell builtin";
-      break;
-    case exit:
-      outputText = "exit is a shell builtin";
-      break;
-    case type:
-      outputText = "type is a shell builtin";
-      break;
-    default:
-      outputText = typeArg + ": not found";
-      break;
+  if (!isValidCommand(typeArg)) {
+    cout << typeArg << ": not found" << endl;
+  }
+  else if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
+    cout << typeArg << " is a shell builtin" << endl;
+  }
+  else {
+    // call the searchPath() function
+    searchPath(typeArg);
   }
 
-  cout << outputText << endl;
+  // enum Types {echo, exit, type, invalid};
+  // Types Type = invalid;
+
+  // if (typeArg == "echo") Type = echo;
+  // else if (typeArg == "exit") Type = exit;
+  // else if (typeArg == "type") Type = type;
+
+  // switch (Type) {
+  //   case echo:
+  //     outputText = "echo is a shell builtin";
+  //     break;
+  //   case exit:
+  //     outputText = "exit is a shell builtin";
+  //     break;
+  //   case type:
+  //     outputText = "type is a shell builtin";
+  //     break;
+  //   default:
+  //     outputText = typeArg + ": not found";
+  //     break;
+  // }
+
+  //cout << outputText << endl;
 }
 
 void repl(string& input) {
@@ -142,9 +203,9 @@ int main() {
   string input;
 
   // start the shell
-  //repl(input);
+  repl(input);
 
   //searchPath();
-  extractPath();
+  //extractPath();
 
 }
