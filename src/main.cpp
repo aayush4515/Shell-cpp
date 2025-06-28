@@ -3,10 +3,17 @@
 
 using namespace std;
 
-void repl() {
-    // stores the input command
-    string input;
+void echo(string& input) {
+  int start = input.find(' ') + 1;
+  int end = input.length();
+  int sizeOfEchoStr = end - start;
 
+  string echoStr = input.substr(start, sizeOfEchoStr);
+
+  cout << echoStr << endl;
+}
+
+void repl(string& input) {
     // REPL
     while (true) {
       // prompt
@@ -15,8 +22,15 @@ void repl() {
       // read the prompt
       getline(cin, input);
 
+      // the exit bulletin
       if (input == "exit 0") {
         return;
+      }
+
+      // check for echo
+      if (input.find("echo") != string::npos) {
+        echo(input);
+        continue;
       }
 
       // output as invalid command
@@ -32,7 +46,10 @@ int main() {
   cout << unitbuf;
   cerr << unitbuf;
 
+  // stores the input command
+  string input;
+
   // start the shell
-  repl();
+  repl(input);
 
 }
