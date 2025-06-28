@@ -8,20 +8,20 @@ int main() {
   cout << unitbuf;
   cerr << unitbuf;
 
+  // stores the input command
   string input;
 
-  while (true) {
-    // prompt
-    cout << "$ ";
+  // prompt
+  cout << "$ ";
 
-    // read the prompt
-    getline(cin, input);
+  // read the prompt
+  getline(cin, input);
 
-    // output as invalid command
-    cout << input << ": command not found" << endl;
+  // output as invalid command
+  cout << input << ": command not found" << endl;
 
-    // set input to null before reading another input
-    input = "";
-  }
+  // REPL
+  main();
+
 
 }
