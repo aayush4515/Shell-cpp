@@ -1,7 +1,22 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 using namespace std;
+
+void searchPath () {
+  const char* envVariable = "PATH";
+  const char* path = getenv(envVariable);
+
+  if (path != nullptr) {
+    cout << "PATH: " << path << endl;
+  }
+  else {
+    cout << "Environment variable " << envVariable << " not found" << endl;
+  }
+}
+
+
 
 string extractCommand(const string& input) {
   int start = 0;
@@ -99,6 +114,8 @@ int main() {
   string input;
 
   // start the shell
-  repl(input);
+  //repl(input);
+
+  searchPath();
 
 }
