@@ -123,15 +123,15 @@ void type(string& input) {
 
   vector<string> builtIns {"echo", "exit", "type", "pwd", "cd"};
 
-  if (!isValidCommand(typeArg)) {
-    cout << typeArg << ": not found" << endl;
-  }
-  else if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
+
+  if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
     cout << typeArg << " is a shell builtin" << endl;
   }
-  else {
-    // call the searchPath() function
+  else if (isValidCommand(typeArg)) {
     searchPath(typeArg);
+  }
+  else {
+    cout << typeArg << ": not found" << endl;
   }
 
   // enum Types {echo, exit, type, invalid};
