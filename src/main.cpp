@@ -15,6 +15,10 @@ void repl() {
       // read the prompt
       getline(cin, input);
 
+      if (input == "exit 0") {
+        return;
+      }
+
       // output as invalid command
       cout << input << ": command not found" << endl;
 
