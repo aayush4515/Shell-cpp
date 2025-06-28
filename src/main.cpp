@@ -37,11 +37,11 @@ void extractPath () {
   }
 }
 
-void searchPath (vector<string> pathDirectories) {
+// void searchPath (vector<string> pathDirectories) {
 
-  // FIXME: searches every single directory in the path for the given commans
-  // FIXME: might require a second parameter to accept the command being sought for
-}
+//   // FIXME: searches every single directory in the path for the given commans
+//   // FIXME: might require a second parameter to accept the command being sought for
+// }
 
 
 string extractCommand(const string& input) {
