@@ -29,8 +29,8 @@ void extractPath () {
     if (path.at(i) == ':') {
       currDirectory = path.substr(0, i + 1);
       path.erase(0, i + 1);
+      pathDirectories.push_back(currDirectory);
     }
-    pathDirectories.push_back(currDirectory);
   }
 
   for (const auto& dir : pathDirectories) {
