@@ -61,7 +61,7 @@ void searchPath (string targetFile) {
                   (p & fs::perms::others_exec) != fs::perms::none)
               {
 
-                string displayPath = string(entry.path()).substr(1, string(entry.path()).length());
+                string displayPath = string(entry.path()).substr(0, string(entry.path()).length());
 
                 cout << targetFile << " is " << displayPath << endl;
               } else {
