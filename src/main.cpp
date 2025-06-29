@@ -185,7 +185,7 @@ void repl(string& input) {
         continue;
       }
       else if (isExecutableCommand(command)) {
-        system(command.c_str());
+        system(input.c_str());
       }
 
       // output as invalid command
