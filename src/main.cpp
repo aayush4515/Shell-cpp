@@ -34,8 +34,6 @@ vector<string> extractPath () {
 
   // splitting the path variables into directories and storing in the vector pathDirectories
 
-  // thought process:
-
   // start a while loop (or maybe a for-loop)
   // keep looking for coloms (:) to separate the directories
   // as soon as the first one is found, push everything until that index - 1 to the vector
@@ -109,7 +107,6 @@ void echo(string& input) {
   int sizeOfEchoStr = end - start;
 
   string echoStr = input.substr(start, sizeOfEchoStr);
-
   cout << echoStr << endl;
 }
 
@@ -119,42 +116,14 @@ void type(string& input) {
   int sizeOfTypeStr = end - start;
 
   string typeArg = input.substr(start, sizeOfTypeStr);
-
   vector<string> builtIns {"echo", "exit", "type", "pwd", "cd"};
 
   if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
     cout << typeArg << " is a shell builtin" << endl;
   }
-  // else if (isValidCommand(typeArg)) {
-  //   searchPath(typeArg);
-  // }
   else {
     searchPath(typeArg);
   }
-
-  // enum Types {echo, exit, type, invalid};
-  // Types Type = invalid;
-
-  // if (typeArg == "echo") Type = echo;
-  // else if (typeArg == "exit") Type = exit;
-  // else if (typeArg == "type") Type = type;
-
-  // switch (Type) {
-  //   case echo:
-  //     outputText = "echo is a shell builtin";
-  //     break;
-  //   case exit:
-  //     outputText = "exit is a shell builtin";
-  //     break;
-  //   case type:
-  //     outputText = "type is a shell builtin";
-  //     break;
-  //   default:
-  //     outputText = typeArg + ": not found";
-  //     break;
-  // }
-
-  //cout << outputText << endl;
 }
 
 void repl(string& input) {
