@@ -138,6 +138,23 @@ void pwd() {
   cout << pwd << endl;
 }
 
+void cd(string& input) {
+  int start = input.find(' ') + 1;
+  int end = input.length();
+  int sizeOfNewDirectory = end - start;
+
+  string newDirectory = input.substr(start, sizeOfNewDirectory);
+
+  // change to new directory
+  try {
+    fs::current_path(newDirectory);
+  }
+  catch (const fs::filesystem_error& e) {
+    cerr << "cd: no such file or directory: " << newDirectory << endl;
+  }
+
+}
+
 void echo(string& input) {
   int start = input.find(' ') + 1;
   int end = input.length();
@@ -191,6 +208,10 @@ void repl(string& input) {
       }
       else if (command == "pwd") {
         pwd();
+        continue;
+      }
+      else if (command == "cd") {
+        cd(input);
         continue;
       }
       else if (isExternalExecutableCommand(command)) {
