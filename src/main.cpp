@@ -135,7 +135,7 @@ string extractCommand(const string& input) {
 
 void pwd() {
   string pwd = string(fs::current_path());
-  pwd = pwd.substr(1, pwd.length());
+  //pwd = pwd.substr(1, pwd.length());
 
   cout << pwd << endl;
 }
