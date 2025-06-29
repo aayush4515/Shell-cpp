@@ -105,7 +105,7 @@ void searchPath (string targetFile) {
 bool isExecutableCommand(const string& cmd) {
   vector<string> dirs = extractPath();
 
-  // ── walk each directory from $PATH ──────────────────────────────
+  // ── walk each directory from $PATH
   for (const string& dir : dirs) {
 
       // Build full path: <dir>/<cmd>
