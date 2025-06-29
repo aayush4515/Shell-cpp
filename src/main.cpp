@@ -9,6 +9,20 @@
 using namespace std;
 namespace fs = filesystem;
 
+bool isValidCommand(string cmd) {
+  vector<string> commands = {
+    "cd", "ls", "echo", "exit", "pwd", "type", "mkdir", "rmdir", "touch",
+    "cp", "mv", "rm", "cat", "clear", "whoami", "man", "which", "grep",
+    "chmod", "chown", "find", "head", "tail", "diff", "history", "ps",
+    "kill", "top", "nano", "vi", "ssh", "scp", "tar", "gzip", "ping"
+  };
+
+  if (find(commands.begin(), commands.end(), cmd) != commands.end()) {
+    return true;
+  }
+  return false;
+}
+
 // extracts the path and returns splitted directories in a vector
 vector<string> extractPath () {
   // stores the directories from the path variables
@@ -78,20 +92,6 @@ void searchPath (string targetFile) {
     }
   }
   cout << targetFile << ": not found" << endl;
-}
-
-bool isValidCommand(string cmd) {
-  vector<string> commands = {
-    "cd", "ls", "echo", "exit", "pwd", "type", "mkdir", "rmdir", "touch",
-    "cp", "mv", "rm", "cat", "clear", "whoami", "man", "which", "grep",
-    "chmod", "chown", "find", "head", "tail", "diff", "history", "ps",
-    "kill", "top", "nano", "vi", "ssh", "scp", "tar", "gzip", "ping"
-  };
-
-  if (find(commands.begin(), commands.end(), cmd) != commands.end()) {
-    return true;
-  }
-  return false;
 }
 
 string extractCommand(const string& input) {
@@ -202,8 +202,5 @@ int main() {
 
   // start the shell
   repl(input);
-
-  //searchPath();
-  //extractPath();
 
 }
