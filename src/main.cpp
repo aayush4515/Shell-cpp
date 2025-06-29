@@ -70,9 +70,6 @@ void searchPath (string targetFile) {
               return; // Exit after finding and checking the file
 
           }
-          else {
-            cout << targetFile << ": not found" << endl;
-          }
       }
     }
     catch (const fs::filesystem_error& e) {
@@ -80,6 +77,7 @@ void searchPath (string targetFile) {
       continue;
     }
   }
+  cout << targetFile << ": not found" << endl;
 }
 
 bool isValidCommand(string cmd) {
