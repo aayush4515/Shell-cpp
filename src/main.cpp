@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <algorithm>
 #include <functional>
+#include <unistd.h>
+#include <sstream>
 
 using namespace std;
 namespace fs = filesystem;
@@ -53,8 +55,7 @@ vector<string> extractPath () {
 }
 
 void searchPath (string targetFile) {
-  // FIXME: searches every single directory in the path for the given commands
-  // FIXME: might require a second parameter to accept the command being sought for
+  // searches every single directory in the path for the given commands
 
   vector<string> paths = extractPath();
 
@@ -71,11 +72,10 @@ void searchPath (string targetFile) {
                   (p & fs::perms::group_exec) != fs::perms::none ||
                   (p & fs::perms::others_exec) != fs::perms::none)
               {
-
                 string displayPath = string(entry.path()).substr(0, string(entry.path()).length());
-
                 cout << targetFile << " is " << displayPath << endl;
-              } else {
+              }
+              else {
                 // continue searching if the file doesn't have exe permissions
                   continue;
               }
@@ -90,6 +90,38 @@ void searchPath (string targetFile) {
     }
   }
   cout << targetFile << ": not found" << endl;
+}
+
+// bool isExecutableCommand(string cmd) {
+//   vector<string> paths = extractPath();
+//   for (const auto& path : paths) {
+//     if (path.find(cmd) != string::npos) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
+
+bool isExecutableCommand(const string& cmd) {
+  vector<string> dirs = extractPath();
+
+  // ── walk each directory from $PATH ──────────────────────────────
+  for (const string& dir : dirs) {
+
+      // Build full path: <dir>/<cmd>
+      fs::path candidate = fs::path(dir) / cmd;
+
+      // Is it a regular file AND executable by someone?
+      if (fs::exists(candidate) && fs::is_regular_file(candidate)) {
+          fs::perms p = fs::status(candidate).permissions();
+          if ((p & fs::perms::owner_exec)  != fs::perms::none ||
+              (p & fs::perms::group_exec)  != fs::perms::none ||
+              (p & fs::perms::others_exec) != fs::perms::none) {
+              return true;                  // found a runnable command
+          }
+      }
+  }
+  return false;                             // nothing matched
 }
 
 string extractCommand(const string& input) {
@@ -152,6 +184,9 @@ void repl(string& input) {
         type(input);
         continue;
       }
+      else if (isExecutableCommand(command)) {
+        system(command.c_str());
+      }
 
       // output as invalid command
       cout << input << ": command not found" << endl;
@@ -160,6 +195,7 @@ void repl(string& input) {
       input = "";
     }
 }
+
 
 int main() {
   // Flush after every std::cout / std:cerr
@@ -170,6 +206,8 @@ int main() {
   string input;
 
   // start the shell
-  repl(input);
+  //repl(input);
+
+  cout << isExecutableCommand("cd") << endl;
 
 }
