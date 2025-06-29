@@ -41,7 +41,6 @@ vector<string> extractPath () {
 }
 
 void searchPath (string targetFile) {
-
   // FIXME: searches every single directory in the path for the given commands
   // FIXME: might require a second parameter to accept the command being sought for
 
@@ -70,6 +69,9 @@ void searchPath (string targetFile) {
               }
               return; // Exit after finding and checking the file
 
+          }
+          else {
+            cout << targetFile << ": not found" << endl;
           }
       }
     }
@@ -119,19 +121,17 @@ void type(string& input) {
   int sizeOfTypeStr = end - start;
 
   string typeArg = input.substr(start, sizeOfTypeStr);
-  //string outputText = "";
 
   vector<string> builtIns {"echo", "exit", "type", "pwd", "cd"};
-
 
   if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
     cout << typeArg << " is a shell builtin" << endl;
   }
-  else if (isValidCommand(typeArg)) {
-    searchPath(typeArg);
-  }
+  // else if (isValidCommand(typeArg)) {
+  //   searchPath(typeArg);
+  // }
   else {
-    cout << typeArg << ": not found" << endl;
+    searchPath(typeArg);
   }
 
   // enum Types {echo, exit, type, invalid};
