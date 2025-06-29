@@ -187,9 +187,10 @@ void repl(string& input) {
       else if (isExecutableCommand(command)) {
         system(input.c_str());
       }
-
       // output as invalid command
-      cout << input << ": command not found" << endl;
+      else {
+        cout << input << ": command not found" << endl;
+      }
 
       // ready for next command
       input = "";
@@ -207,7 +208,5 @@ int main() {
 
   // start the shell
   repl(input);
-
-  cout << isExecutableCommand("cd") << endl;
 
 }
