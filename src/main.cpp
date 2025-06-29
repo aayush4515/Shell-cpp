@@ -102,7 +102,7 @@ void searchPath (string targetFile) {
 //   return false;
 // }
 
-bool isExecutableCommand(const string& cmd) {
+bool isExternalExecutableCommand(const string& cmd) {
   vector<string> dirs = extractPath();
 
   // ── walk each directory from $PATH
@@ -131,6 +131,13 @@ string extractCommand(const string& input) {
   string command = input.substr(start, sizeCmd);
 
   return command;
+}
+
+void pwd() {
+  string pwd = string(fs::current_path());
+  pwd = pwd.substr(1, pwd.length());
+
+  cout << pwd << endl;
 }
 
 void echo(string& input) {
@@ -184,7 +191,12 @@ void repl(string& input) {
         type(input);
         continue;
       }
-      else if (isExecutableCommand(command)) {
+      else if (command == "pwd") {
+        pwd();
+        continue;
+      }
+      else if (isExternalExecutableCommand(command)) {
+        cout << "pwd is an executable command" << endl;
         system(input.c_str());
       }
       // output as invalid command
