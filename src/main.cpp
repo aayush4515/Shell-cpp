@@ -147,6 +147,9 @@ void cd(string& input) {
 
   // change to new directory
   try {
+    if (newDirectory == "~") {
+      newDirectory = string(getenv("HOME"));
+    }
     fs::current_path(newDirectory);
   }
   catch (const fs::filesystem_error& e) {
