@@ -206,7 +206,7 @@ int main() {
   string input;
 
   // start the shell
-  //repl(input);
+  repl(input);
 
   cout << isExecutableCommand("cd") << endl;
 
