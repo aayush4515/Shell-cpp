@@ -135,8 +135,6 @@ string extractCommand(const string& input) {
 
 void pwd() {
   string pwd = string(fs::current_path());
-  //pwd = pwd.substr(1, pwd.length());
-
   cout << pwd << endl;
 }
 
@@ -196,7 +194,6 @@ void repl(string& input) {
         continue;
       }
       else if (isExternalExecutableCommand(command)) {
-        cout << "pwd is an executable command" << endl;
         system(input.c_str());
       }
       // output as invalid command
