@@ -2,78 +2,78 @@
 
 // checks if a string is within single quotes
 bool isSingleQuoted(string str) {
+  size_t first = str.find('\'');
+  if (first == string::npos) return false;
+
+  size_t second = str.find('\'', first + 1);
+  return second != string::npos;
+}
+// checks if a string is within double quotes
+bool isDoubleQuoted(string str) {
+  size_t first = str.find('\"');
+  if (first == string::npos) return false;
+
+  size_t second = str.find('\"', first + 1);
+  return second != string::npos;
+}
+
+// checks if a string is adjacent-quotes; works for both single and double quotes
+bool isAdjacentQuoted (string str) {
+  for (int i = 0; i < str.length() - 1; i++) {
+    if ( ((str.at(i) == '\'') && (str.at(i + 1) == '\'')) || ((str.at(i) == '\"') && (str.at(i + 1) == '\"')) ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool hasConsecutiveSpaces(string str) {
+  if (count(str.begin(), str.end(), ' ') > 1) {
+    return true;
+  }
+  return false;
+}
+
+bool isEmptyQuoted(string str, size_t& first, size_t& last) {
+  first = str.find('\'');
+  last = str.find_last_of('\'');
+
+  if (last == first + 1) {
+    return true;
+  }
+  return false;
+}
+
+// handles various single-quoted string for 'echo' command
+string handleSingleQuotes(string str) {
+  size_t firstQuote = 0;
+  size_t lastQuote = 0;
+  string returnStr;
+  // enclosed within single-quotes; simple form: example: 'hello world'
+  // this also preserves any spaces between the qutoes
+  if ((str.at(0) == '\'') && str.at(str.length() - 1) == '\'') {
     size_t first = str.find('\'');
-    if (first == string::npos) return false;
-
+    size_t last = str.find('\'', first + 1);
+    returnStr = str.substr(first + 1, last - first - 1);
+  }
+  if (isEmptyQuoted(str, firstQuote, lastQuote)) {
+    cout << "Empty quoted" << endl;
+    // cout << "First Quote: " << firstQuote << endl;
+    // cout << "Last Quote " << lastQuote << endl;
+    returnStr = str.substr(0, firstQuote) + str.substr(lastQuote + 1, str.length() - lastQuote - 1);
+  }
+  // Adjacent quoted strings are concatenated. For example: 'hello''world' becomes helloworld
+  else if (isAdjacentQuoted(str)) {
+    size_t first = str.find('\'');
     size_t second = str.find('\'', first + 1);
-    return second != string::npos;
+    size_t third = str.find('\'', second + 1);
+    size_t last = str.find('\'', third + 1);
+    returnStr = str.substr(first + 1, second - first - 1) + str.substr(third + 1, last - third - 1);
   }
-  // checks if a string is within double quotes
-  bool isDoubleQuoted(string str) {
-    size_t first = str.find('\"');
-    if (first == string::npos) return false;
+  return returnStr;
+}
 
-    size_t second = str.find('\"', first + 1);
-    return second != string::npos;
-  }
+// handles various double-quoted string for 'echo' command
+// string handleDoubleQuotes(string str) {
 
-  // checks if a string is adjacent-quotes; works for both single and double quotes
-  bool isAdjacentQuoted (string str) {
-    for (int i = 0; i < str.length() - 1; i++) {
-      if ( ((str.at(i) == '\'') && (str.at(i + 1) == '\'')) || ((str.at(i) == '\"') && (str.at(i + 1) == '\"')) ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  bool hasConsecutiveSpaces(string str) {
-    if (count(str.begin(), str.end(), ' ') > 1) {
-      return true;
-    }
-    return false;
-  }
-
-  bool isEmptyQuoted(string str, size_t& first, size_t& last) {
-    first = str.find('\'');
-    last = str.find_last_of('\'');
-
-    if (last == first + 1) {
-      return true;
-    }
-    return false;
-  }
-
-  // handles various single-quoted string for 'echo' command
-  string handleSingleQuotes(string str) {
-    size_t firstQuote = 0;
-    size_t lastQuote = 0;
-    string returnStr;
-    // enclosed within single-quotes; simple form: example: 'hello world'
-    // this also preserves any spaces between the qutoes
-    if ((str.at(0) == '\'') && str.at(str.length() - 1) == '\'') {
-      size_t first = str.find('\'');
-      size_t last = str.find('\'', first + 1);
-      returnStr = str.substr(first + 1, last - first - 1);
-    }
-    if (isEmptyQuoted(str, firstQuote, lastQuote)) {
-      cout << "Empty quoted" << endl;
-      // cout << "First Quote: " << firstQuote << endl;
-      // cout << "Last Quote " << lastQuote << endl;
-      returnStr = str.substr(0, firstQuote) + str.substr(lastQuote + 1, str.length() - lastQuote - 1);
-    }
-    // Adjacent quoted strings are concatenated. For example: 'hello''world' becomes helloworld
-    else if (isAdjacentQuoted(str)) {
-      size_t first = str.find('\'');
-      size_t second = str.find('\'', first + 1);
-      size_t third = str.find('\'', second + 1);
-      size_t last = str.find('\'', third + 1);
-      returnStr = str.substr(first + 1, second - first - 1) + str.substr(third + 1, last - third - 1);
-    }
-    return returnStr;
-  }
-
-  // handles various double-quoted string for 'echo' command
-  // string handleDoubleQuotes(string str) {
-
-  // }
+// }
