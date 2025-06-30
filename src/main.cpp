@@ -2,9 +2,6 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
-#include <filesystem>
-#include <algorithm>
-#include <functional>
 #include <unistd.h>
 #include <sstream>
 #include "Utilities/Commands/commands.h"
@@ -58,7 +55,6 @@ void repl(string& input) {
       input = "";
     }
 }
-
 
 int main() {
   // Flush after every std::cout / std:cerr
