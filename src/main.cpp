@@ -1,7 +1,5 @@
 #include <iostream>
-#include <string>
 #include <cstdlib>
-#include <vector>
 #include <unistd.h>
 #include <sstream>
 #include "Utilities/Commands/commands.h"
@@ -9,6 +7,7 @@
 using namespace std;
 namespace fs = filesystem;
 
+// REPL logic
 void repl(string& input) {
     // REPL
     while (true) {
