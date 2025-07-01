@@ -1,3 +1,6 @@
+#ifndef _ECHOHELPERS_
+#define _ECHOHELPERS_
+
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -13,4 +16,6 @@ using namespace std;
 // string handleSingleQuotes(string str);
 // vector<string> tokenize(const string& line);
 
-static string processEchoArgument(const string& raw);
+string processEchoArgument(const string& raw);
+
+#endif

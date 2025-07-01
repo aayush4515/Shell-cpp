@@ -79,7 +79,7 @@
 
 // // }
 
-static string processEchoArgument(const string& raw) {
+string processEchoArgument(const string& raw) {
   string out;
   bool  inSingle     = false;   // are we inside single quotes?
   bool  lastWasSpace = false;   // to collapse consecutive blanks
