@@ -17,6 +17,7 @@
 //   return second != string::npos;
 // }
 
+
 // // checks if a string is adjacent-quotes; works for both single and double quotes
 // bool isAdjacentQuoted (string str) {
 //   for (int i = 0; i < str.length() - 1; i++) {
