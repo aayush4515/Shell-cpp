@@ -1,4 +1,7 @@
 #include "echohelpers.h"
+#include <cctype>
+#include <iostream>
+#include <string>
 
 // string stripQuotesAndCollapse(const string& raw)
 // {
@@ -36,75 +39,62 @@
 //     return out;
 // }
 
-string stripQuotesAndCollapse(const string& raw)
-{
-    string out;
-    char quote = '\0';          // '\0' = not in any quote; otherwise ' or "
-    bool lastWasSpace = false;  // for collapsing blanks outside quotes
+bool isEscaped(const string& raw, size_t pos);
 
-    for (size_t i = 0; i < raw.size(); /* advanced in-body */) {
+string stripQuotesAndCollapse(const string& raw) {
+    string out;
+    bool inSingle = false;
+    bool inDouble = false;
+    bool lastSpace = false;
+
+    for (size_t i = 0; i < raw.size(); ++i) {
         char ch = raw[i];
 
-        // 1) Backslash-escape handling
-        if (ch == '\\' && i + 1 < raw.size()) {
-            char next = raw[i + 1];
-            // 1a) inside double-quotes: only \" and \\ are special
-            if (quote == '"' && (next == '"' || next == '\\')) {
-                out.push_back(next);
-                lastWasSpace = false;
-                i += 2;
+        // 1) Handle backslashes *either* inside double quotes (for \" and \\)
+        //    *or* outside of any quotes (for any \X → X).
+        if (ch == '\\' && i + 1 < raw.size() && !inSingle) {
+            char nxt = raw[i + 1];
+            if ((inDouble && (nxt == '"' || nxt == '\\'))
+             || (!inSingle && !inDouble)) {
+                out.push_back(nxt);
+                lastSpace = false;
+                ++i;         // skip the escaped character
                 continue;
             }
-            // 1b) outside *any* quotes: backslash escapes the very next char
-            if (quote == '\0') {
-                out.push_back(next);
-                lastWasSpace = false;
-                i += 2;
-                continue;
-            }
-            // otherwise (e.g. inside single-quotes or in double-quotes with other next chars)
-            // we fall through and treat '\' literally
         }
 
-        // 2) Quote-enter / quote-exit
-        if (ch == '\'' || ch == '"') {
-            if (quote == '\0') {
-                // start a new quoted section
-                quote = ch;
-                i++;
-                continue;       // don’t copy the quote itself
-            } else if (ch == quote) {
-                // end the current quoted section
-                quote = '\0';
-                i++;
-                continue;       // don’t copy the quote itself
-            }
-            // different quote-type inside a quote: *do* copy below
-        }
-
-        // 3) Collapse runs of whitespace *only* when not in quotes
-        if (quote == '\0' && isspace(static_cast<unsigned char>(ch))) {
-            if (!lastWasSpace) {
-                out.push_back(' ');
-                lastWasSpace = true;
-            }
-            i++;
+        // 2) Toggle single-quote state (and *remove* the ' itself)
+        if (ch == '\'' && !inDouble && !isEscaped(raw, i)) {
+            inSingle = !inSingle;
             continue;
         }
 
-        // 4) All other characters
+        // 3) Toggle double-quote state (and *remove* the " itself)
+        if (ch == '"' && !inSingle && !isEscaped(raw, i)) {
+            inDouble = !inDouble;
+            continue;
+        }
+
+        // 4) Collapse whitespace runs when *not* in any quotes
+        if (!inSingle && !inDouble && isspace(static_cast<unsigned char>(ch))) {
+            if (!lastSpace) {
+                out.push_back(' ');
+                lastSpace = true;
+            }
+            continue;
+        }
+
+        // 5) All other characters just copy through
         out.push_back(ch);
-        lastWasSpace = false;
-        i++;
+        lastSpace = false;
     }
 
-    if (quote != '\0') {
-        cerr << "myshell: unmatched " << quote << " quote\n";
-    }
+    // (optional) warn on unclosed quotes
+    if (inSingle)  cerr << "myshell: unmatched ' quote\n";
+    if (inDouble)  cerr << "myshell: unmatched \" quote\n";
+
     return out;
 }
-
-
 
 bool hasBackslashOutsideQuotes(const std::string& raw)
 {
@@ -131,6 +121,46 @@ bool isEscaped(const string& s, size_t pos) {
     for (int i = static_cast<int>(pos) - 1; i >= 0 && s[i] == '\\'; --i)
         count++;
     return (count % 2) == 1; // odd number = escaped
+}
+
+string processBackslashInsideDoubleQuotes(const string& raw) {
+    string out;
+    bool inSingle = false;
+    bool inDouble = false;
+
+    for (size_t i = 0; i < raw.size(); ++i) {
+        char ch = raw[i];
+
+        // toggle single‐quote (only when not in double‐quote)
+        if (ch == '\'' && !inDouble) {
+            inSingle = !inSingle;
+            out.push_back(ch);
+            continue;
+        }
+        // toggle double‐quote (only when not in single‐quote, and un‐escaped)
+        if (ch == '"' && !inSingle && !isEscaped(raw, i)) {
+            inDouble = !inDouble;
+            out.push_back(ch);
+            continue;
+        }
+
+        // handle backslash‐escapes
+        if (ch == '\\' && i + 1 < raw.size() && !inSingle) {
+            char nxt = raw[i + 1];
+            // inside double‐quotes: only \" and \\ unescape
+            // outside any quotes: any \X → X
+            if ((inDouble && (nxt == '"' || nxt == '\\')) || (!inDouble)) {
+                out.push_back(nxt);
+                ++i;  // skip escaped character
+                continue;
+            }
+        }
+
+        // default: copy through
+        out.push_back(ch);
+    }
+
+    return out;
 }
 
 

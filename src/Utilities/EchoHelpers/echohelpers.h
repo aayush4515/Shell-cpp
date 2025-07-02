@@ -22,5 +22,6 @@ bool isEscaped(const string& s, size_t pos);
 bool hasBackslashOutsideQuotes(const string& raw);
 bool hasBackslashInsideDoubleQuotes(const string& raw);
 string processNonQuotedBackslashes(const string& raw);
+string processBackslashInsideDoubleQuotes(const string& raw);
 
 #endif
