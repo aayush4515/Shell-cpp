@@ -74,7 +74,6 @@ void echo(string& input) {
     std::cout << echoStr << '\n';
 }
 
-
 void type(string& input) {
   int start = input.find(' ') + 1;
   int end = input.length();

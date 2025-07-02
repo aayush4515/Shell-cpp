@@ -17,7 +17,10 @@ using namespace std;
 // vector<string> tokenize(const string& line);
 
 string stripQuotesAndCollapse(const string& raw);
+// bool isEscapedQuote(const string& s, size_t pos);
+bool isEscaped(const string& s, size_t pos);
 bool hasBackslashOutsideQuotes(const string& raw);
+bool hasBackslashInsideDoubleQuotes(const string& raw);
 string processNonQuotedBackslashes(const string& raw);
 
 #endif

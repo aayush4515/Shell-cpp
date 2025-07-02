@@ -1,5 +1,199 @@
 #include "echohelpers.h"
 
+// string stripQuotesAndCollapse(const string& raw)
+// {
+//     string out;
+//     char quote = '\0';          // '\0' = outside quotes; otherwise holds ' or "
+//     bool lastWasSpace = false;  // for collapsing blanks outside quotes
+
+//     for (char ch : raw) {
+//         // 1.  Opening / closing quote?
+//         if ((ch == '\'' || ch == '"')) {
+//             if (quote == '\0') {          // entering quoted section
+//                 quote = ch;
+//                 continue;                 // don’t copy the quote itself
+//             } else if (ch == quote) {     // leaving quoted section
+//                 quote = '\0';
+//                 continue;                 // don’t copy the quote either
+//             }
+//             // Different quote char inside current quotes → copy literally
+//         }
+
+//         // 2.  Whitespace outside quotes: collapse runs to a single space
+//         if (isspace(static_cast<unsigned char>(ch)) && quote == '\0') {
+//             if (lastWasSpace) continue;   // already added one space
+//             out.push_back(' ');
+//             lastWasSpace = true;
+//         } else {
+//             out.push_back(ch);
+//             lastWasSpace = false;
+//         }
+//     }
+
+//     if (quote != '\0')
+//         cerr << "myshell: unmatched " << quote << " quote\n";
+
+//     return out;
+// }
+
+string stripQuotesAndCollapse(const string& raw)
+{
+    string out;
+    char quote = '\0';          // '\0' = not in any quote; otherwise ' or "
+    bool lastWasSpace = false;  // for collapsing blanks outside quotes
+
+    for (size_t i = 0; i < raw.size(); /* advanced in-body */) {
+        char ch = raw[i];
+
+        // 1) Backslash-escape handling
+        if (ch == '\\' && i + 1 < raw.size()) {
+            char next = raw[i + 1];
+            // 1a) inside double-quotes: only \" and \\ are special
+            if (quote == '"' && (next == '"' || next == '\\')) {
+                out.push_back(next);
+                lastWasSpace = false;
+                i += 2;
+                continue;
+            }
+            // 1b) outside *any* quotes: backslash escapes the very next char
+            if (quote == '\0') {
+                out.push_back(next);
+                lastWasSpace = false;
+                i += 2;
+                continue;
+            }
+            // otherwise (e.g. inside single-quotes or in double-quotes with other next chars)
+            // we fall through and treat '\' literally
+        }
+
+        // 2) Quote-enter / quote-exit
+        if (ch == '\'' || ch == '"') {
+            if (quote == '\0') {
+                // start a new quoted section
+                quote = ch;
+                i++;
+                continue;       // don’t copy the quote itself
+            } else if (ch == quote) {
+                // end the current quoted section
+                quote = '\0';
+                i++;
+                continue;       // don’t copy the quote itself
+            }
+            // different quote-type inside a quote: *do* copy below
+        }
+
+        // 3) Collapse runs of whitespace *only* when not in quotes
+        if (quote == '\0' && isspace(static_cast<unsigned char>(ch))) {
+            if (!lastWasSpace) {
+                out.push_back(' ');
+                lastWasSpace = true;
+            }
+            i++;
+            continue;
+        }
+
+        // 4) All other characters
+        out.push_back(ch);
+        lastWasSpace = false;
+        i++;
+    }
+
+    if (quote != '\0') {
+        cerr << "myshell: unmatched " << quote << " quote\n";
+    }
+    return out;
+}
+
+
+
+bool hasBackslashOutsideQuotes(const std::string& raw)
+{
+    bool inSingle = false;   // inside '...'
+    bool inDouble = false;   // inside "..."
+
+    for (char ch : raw) {
+        if (ch == '\'' && !inDouble) {          // open/close single-quotes
+            inSingle = !inSingle;
+        }
+        else if (ch == '"' && !inSingle) {      // open/close double-quotes
+            inDouble = !inDouble;
+        }
+        else if (ch == '\\' && !inSingle && !inDouble) {
+            return true;                        // backslash found outside quotes
+        }
+    }
+    return false;
+}
+
+bool isEscaped(const string& s, size_t pos) {
+    // Count backslashes before position `pos`
+    int count = 0;
+    for (int i = static_cast<int>(pos) - 1; i >= 0 && s[i] == '\\'; --i)
+        count++;
+    return (count % 2) == 1; // odd number = escaped
+}
+
+
+// bool isEscapedQuote(const string& s, size_t pos) {
+//     int backslashes = 0;
+//     // look left from the quote and count consecutive '\'
+//     for (int i = static_cast<int>(pos) - 1; i >= 0 && s[i] == '\\'; --i) {
+//         ++backslashes;
+//     }
+
+//     return (backslashes % 2) == 1;          // odd = escaped
+// }
+
+// bool hasBackshalshInsideDoubleQuotes(const string& raw) {
+//     bool inDouble = false;
+
+//     for (char ch : raw) {
+//         if (ch == '"' && !inDouble) {       // open/close double quotes
+//             inDouble = !inDouble;
+//         }
+//         else if (ch == '\\' && inDouble) {  // backslash found inside double quotes
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+bool hasBackslashInsideDoubleQuotes(const string& raw)
+{
+    bool inDouble = false;
+
+    for (std::size_t i = 0; i < raw.size(); ++i) {
+        char ch = raw[i];
+
+        if (ch == '"' && !isEscaped(raw, i)) {
+            inDouble = !inDouble;            // toggle quote state
+        }
+        else if (ch == '\\' && inDouble) {   // backslash inside "...":
+            return true;
+        }
+    }
+    return false;
+}
+
+string processNonQuotedBackslashes(const string& raw) {
+    string out;
+
+    for (char ch : raw) {
+        // skip '\'
+        //cout << "Current character: " << ch << endl;
+        if (ch == '\\') {
+            continue;
+        }
+        //cout << "Character after if-statement: " << ch << endl;
+        // keep everything else in the string
+        out.push_back(ch);
+    }
+
+    return out;
+}
+
+
+
 // // checks if a string is within single quotes
 // bool isSingleQuoted(string str) {
 //     // size_t first = str.find('\'');
@@ -117,41 +311,10 @@
 //   return out;
 // }
 
-string stripQuotesAndCollapse(const string& raw)
-{
-    string out;
-    char quote = '\0';          // '\0' = outside quotes; otherwise holds ' or "
-    bool lastWasSpace = false;  // for collapsing blanks outside quotes
 
-    for (char ch : raw) {
-        // 1.  Opening / closing quote?
-        if ((ch == '\'' || ch == '"')) {
-            if (quote == '\0') {          // entering quoted section
-                quote = ch;
-                continue;                 // don’t copy the quote itself
-            } else if (ch == quote) {     // leaving quoted section
-                quote = '\0';
-                continue;                 // don’t copy the quote either
-            }
-            // Different quote char inside current quotes → copy literally
-        }
+// WORKING LOGIC, BUT TOO LENGTHY
 
-        // 2.  Whitespace outside quotes: collapse runs to a single space
-        if (isspace(static_cast<unsigned char>(ch)) && quote == '\0') {
-            if (lastWasSpace) continue;   // already added one space
-            out.push_back(' ');
-            lastWasSpace = true;
-        } else {
-            out.push_back(ch);
-            lastWasSpace = false;
-        }
-    }
-
-    if (quote != '\0')
-        cerr << "myshell: unmatched " << quote << " quote\n";
-
-    return out;
-}
+/*
 
 bool hasBackslashOutsideQuotes(const string& raw) {
     size_t posFirstSingleQuote = raw.find('\'') != string::npos ? raw.find('\'') : string::npos;
@@ -199,19 +362,5 @@ bool hasBackslashOutsideQuotes(const string& raw) {
     return false;
 }
 
-string processNonQuotedBackslashes(const string& raw) {
-    string out;
+*/
 
-    for (char ch : raw) {
-        // skip '\'
-        //cout << "Current character: " << ch << endl;
-        if (ch == '\\') {
-            continue;
-        }
-        //cout << "Character after if-statement: " << ch << endl;
-        // keep everything else in the string
-        out.push_back(ch);
-    }
-
-    return out;
-}
