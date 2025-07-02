@@ -43,39 +43,39 @@ bool isEscaped(const string& raw, size_t pos);
 
 string stripQuotesAndCollapse(const string& raw) {
     string out;
-    bool inSingle = false;
-    bool inDouble = false;
+    bool inSingle  = false;
+    bool inDouble  = false;
     bool lastSpace = false;
 
     for (size_t i = 0; i < raw.size(); ++i) {
         char ch = raw[i];
 
-        // 1) Handle backslashes *either* inside double quotes (for \" and \\)
-        //    *or* outside of any quotes (for any \X → X).
+        // 1) Handle backslash‐escapes:
+        //    • inside double‐quotes: unescape \" and \\
+        //    • outside any quotes: unescape any \X → X
         if (ch == '\\' && i + 1 < raw.size() && !inSingle) {
             char nxt = raw[i + 1];
-            if ((inDouble && (nxt == '"' || nxt == '\\'))
-             || (!inSingle && !inDouble)) {
+            if ((inDouble && (nxt == '"' || nxt == '\\')) || (!inDouble)) {
                 out.push_back(nxt);
                 lastSpace = false;
-                ++i;         // skip the escaped character
+                ++i;    // skip the escaped character
                 continue;
             }
         }
 
-        // 2) Toggle single-quote state (and *remove* the ' itself)
+        // 2) Toggle & strip single‐quotes (only if not in a double‐quote)
         if (ch == '\'' && !inDouble && !isEscaped(raw, i)) {
             inSingle = !inSingle;
             continue;
         }
 
-        // 3) Toggle double-quote state (and *remove* the " itself)
+        // 3) Toggle & strip double‐quotes (only if not in a single‐quote)
         if (ch == '"' && !inSingle && !isEscaped(raw, i)) {
             inDouble = !inDouble;
             continue;
         }
 
-        // 4) Collapse whitespace runs when *not* in any quotes
+        // 4) Collapse spaces when outside all quotes
         if (!inSingle && !inDouble && isspace(static_cast<unsigned char>(ch))) {
             if (!lastSpace) {
                 out.push_back(' ');
@@ -84,15 +84,13 @@ string stripQuotesAndCollapse(const string& raw) {
             continue;
         }
 
-        // 5) All other characters just copy through
+        // 5) Copy everything else
         out.push_back(ch);
         lastSpace = false;
     }
 
-    // (optional) warn on unclosed quotes
     if (inSingle)  cerr << "myshell: unmatched ' quote\n";
     if (inDouble)  cerr << "myshell: unmatched \" quote\n";
-
     return out;
 }
 
