@@ -25,21 +25,8 @@ void repl(string& input) {
       // extract the command
       string command = extractCommand(input);
 
-      // check for various commands
-      if (command == "echo") {
-        echo(input);
-        continue;
-      }
-      else if (command == "type") {
-        type(input);
-        continue;
-      }
-      else if (command == "pwd") {
-        pwd();
-        continue;
-      }
-      else if (command == "cd") {
-        cd(input);
+      if (isBuiltin(command)) {
+        runBuiltin(command, input);
         continue;
       }
       else if (isExternalExecutableCommand(command)) {

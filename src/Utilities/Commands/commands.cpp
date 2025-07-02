@@ -1,5 +1,7 @@
 #include "commands.h"
 #include <filesystem>
+#include <iomanip>
+#include <sstream>
 
 namespace fs = filesystem;
 
@@ -68,9 +70,6 @@ void echo(string& input) {
     if (hasBackslashOutsideQuotes(rawArgs)) {    // Does it have non-quoted backslash(es)?
       echoStr = processNonQuotedBackslashes(rawArgs);
     }
-    // else if (hasBackslashInsideDoubleQuotes(rawArgs)) {
-    //   echoStr = stripQuotesAndCollapse(processBackslashInsideDoubleQuotes(rawArgs));
-    // }
     else {
       echoStr = stripQuotesAndCollapse(rawArgs);
     }

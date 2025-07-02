@@ -1,4 +1,5 @@
 #include "helpers.h"
+#include "../Commands/commands.h"
 
 namespace fs = filesystem;
 
@@ -14,6 +15,33 @@ bool isValidCommand(string cmd) {
     return true;
   }
   return false;
+}
+
+bool isBuiltin(const string& cmd) {
+  if (cmd == "echo" || cmd == "cd" || cmd == "type" || cmd == "pwd") {
+    return true;
+  }
+  return false;
+}
+
+void runBuiltin(string& cmd, string& input) {
+  // check for various commands
+  if (cmd == "echo") {
+    echo(input);
+    return;
+  }
+  else if (cmd == "type") {
+    type(input);
+    return;
+  }
+  else if (cmd == "pwd") {
+    pwd();
+    return;
+  }
+  else if (cmd == "cd") {
+    cd(input);
+    return;
+  }
 }
 
 // extracts the path and returns splitted directories in a vector
