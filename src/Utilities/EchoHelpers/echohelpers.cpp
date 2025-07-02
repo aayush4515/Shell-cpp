@@ -1,31 +1,31 @@
 #include "echohelpers.h"
 
-// checks if a string is within single quotes
-bool isSingleQuoted(string str) {
-    // size_t first = str.find('\'');
-    // if (first == string::npos) return false;
+// // checks if a string is within single quotes
+// bool isSingleQuoted(string str) {
+//     // size_t first = str.find('\'');
+//     // if (first == string::npos) return false;
 
-    // size_t second = str.find('\'', first + 1);
-    // return second != string::npos;
+//     // size_t second = str.find('\'', first + 1);
+//     // return second != string::npos;
 
-    if ((str.at(0) == '\'') && (str.at(str.length() - 1) == '\'')) {
-        return true;
-    }
-    return false;
-}
-// checks if a string is within double quotes
-bool isDoubleQuoted(string str) {
-//   size_t first = str.find('\"');
-//   if (first == string::npos) return false;
+//     if ((str.at(0) == '\'') && (str.at(str.length() - 1) == '\'')) {
+//         return true;
+//     }
+//     return false;
+// }
+// // checks if a string is within double quotes
+// bool isDoubleQuoted(string str) {
+// //   size_t first = str.find('\"');
+// //   if (first == string::npos) return false;
 
-//   size_t second = str.find('\"', first + 1);
-//   return second != string::npos;
+// //   size_t second = str.find('\"', first + 1);
+// //   return second != string::npos;
 
-    if ((str.at(0) == '"') && (str.at(str.length() - 1) == '"')) {
-        return true;
-    }
-    return false;
-}
+//     if ((str.at(0) == '"') && (str.at(str.length() - 1) == '"')) {
+//         return true;
+//     }
+//     return false;
+// }
 
 
 // // checks if a string is adjacent-quotes; works for both single and double quotes
@@ -151,6 +151,30 @@ string stripQuotesAndCollapse(const string& raw)
         cerr << "myshell: unmatched " << quote << " quote\n";
 
     return out;
+}
+
+bool hasBackslashOutsideQuotes(const string& raw) {
+    size_t posFirstSingleQuote = raw.find('\'') != string::npos ? raw.find('\'') : string::npos;
+    size_t posFirstDoubleQuote = raw.find('"') != string::npos ? raw.find('"') : string::npos;
+    size_t posFirstBackslash = raw.find('\\');
+
+    // both single and double quotes exits
+    if ((posFirstSingleQuote != string::npos) && (posFirstDoubleQuote != string::npos)) {
+        // single quote comes before double quote
+        if (posFirstSingleQuote < posFirstDoubleQuote) {
+            if ((posFirstBackslash > posFirstSingleQuote)) {
+                return true;
+            }
+        }
+        // double quote comes before single quote
+        else if (posFirstDoubleQuote < posFirstSingleQuote) {
+            if ((posFirstBackslash > posFirstDoubleQuote)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    return false;
 }
 
 string processNonQuotedBackslashes(const string& raw) {

@@ -62,14 +62,15 @@ void echo(string& input) {
 
     string rawArgs = input.substr(firstSpace + 1);   // everything after “echo ”
     string echoStr = "";
-    // check if quoted
-    if (isSingleQuoted(rawArgs) || (isDoubleQuoted(rawArgs))) {
-      echoStr = stripQuotesAndCollapse(rawArgs);
-    }
-    else if (rawArgs.find('\\') != string::npos) {    // Does it have non-quoted backslash(es)?
+
+    // check for backslash outside quotes
+
+    if (hasBackslashOutsideQuotes(rawArgs)) {    // Does it have non-quoted backslash(es)?
       echoStr = processNonQuotedBackslashes(rawArgs);
     }
-
+    else {
+      echoStr = stripQuotesAndCollapse(rawArgs);
+    }
     std::cout << echoStr << '\n';
 }
 
