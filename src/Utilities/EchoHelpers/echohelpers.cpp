@@ -142,3 +142,18 @@ string stripQuotesAndCollapse(const string& raw)
 
     return out;
 }
+
+string processNonQuotedBackslashes(const string& raw) {
+    string out;
+
+    for (char ch : raw) {
+        // skip '\'
+        if (ch == '\\') {
+            continue;
+        }
+        // keep everything else in the string
+        out.push_back(ch);
+    }
+
+    return out;
+}

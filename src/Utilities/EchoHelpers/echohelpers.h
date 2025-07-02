@@ -17,5 +17,6 @@ using namespace std;
 // vector<string> tokenize(const string& line);
 
 string stripQuotesAndCollapse(const string& raw);
+string processNonQuotedBackslashes(const string& raw);
 
 #endif
