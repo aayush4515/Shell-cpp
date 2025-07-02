@@ -158,11 +158,11 @@ string processNonQuotedBackslashes(const string& raw) {
 
     for (char ch : raw) {
         // skip '\'
-        cout << "Current character: " << ch << endl;
+        //cout << "Current character: " << ch << endl;
         if (ch == '\\') {
             continue;
         }
-        cout << "Character after if-statement: " << ch << endl;
+        //cout << "Character after if-statement: " << ch << endl;
         // keep everything else in the string
         out.push_back(ch);
     }
