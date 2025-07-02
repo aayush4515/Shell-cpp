@@ -43,54 +43,53 @@ bool isEscaped(const string& raw, size_t pos);
 
 string stripQuotesAndCollapse(const string& raw) {
     string out;
-    bool inSingle  = false;
-    bool inDouble  = false;
-    bool lastSpace = false;
+    bool inSingle    = false;
+    bool inDouble    = false;
+    bool lastWasSpace = false;
 
-    for (size_t i = 0; i < raw.size(); ++i) {
+    for (size_t i = 0;  i < raw.size();  ++i) {
         char ch = raw[i];
 
         // 1) Handle backslash‐escapes:
         //    • inside double‐quotes: unescape \" and \\
-        //    • outside any quotes: unescape any \X → X
-        if (ch == '\\' && i + 1 < raw.size() && !inSingle) {
-            char nxt = raw[i + 1];
-            if ((inDouble && (nxt == '"' || nxt == '\\')) || (!inDouble)) {
+        //    • outside *any* quotes: unescape any \X → X
+        if (ch == '\\' && !inSingle && i+1 < raw.size()) {
+            char nxt = raw[i+1];
+            if ((inDouble && (nxt == '"'  || nxt == '\\'))
+             || (!inDouble)) {
                 out.push_back(nxt);
-                lastSpace = false;
-                ++i;    // skip the escaped character
+                ++i;              // skip the escaped character
+                lastWasSpace = false;
                 continue;
             }
         }
 
-        // 2) Toggle & strip single‐quotes (only if not in a double‐quote)
-        if (ch == '\'' && !inDouble && !isEscaped(raw, i)) {
-            inSingle = !inSingle;
-            continue;
-        }
-
-        // 3) Toggle & strip double‐quotes (only if not in a single‐quote)
+        // 2) Toggle & strip double‐quotes (when not in single‐quotes)
         if (ch == '"' && !inSingle && !isEscaped(raw, i)) {
             inDouble = !inDouble;
             continue;
         }
 
-        // 4) Collapse spaces when outside all quotes
-        if (!inSingle && !inDouble && isspace(static_cast<unsigned char>(ch))) {
-            if (!lastSpace) {
+        // 3) Toggle & strip single‐quotes (when not in double‐quotes)
+        if (ch == '\'' && !inDouble) {
+            inSingle = !inSingle;
+            continue;
+        }
+
+        // 4) Collapse spaces when outside *all* quotes
+        if (!inSingle && !inDouble && isspace((unsigned char)ch)) {
+            if (!lastWasSpace) {
                 out.push_back(' ');
-                lastSpace = true;
+                lastWasSpace = true;
             }
             continue;
         }
 
-        // 5) Copy everything else
+        // 5) Everything else passes through
         out.push_back(ch);
-        lastSpace = false;
+        lastWasSpace = false;
     }
 
-    if (inSingle)  cerr << "myshell: unmatched ' quote\n";
-    if (inDouble)  cerr << "myshell: unmatched \" quote\n";
     return out;
 }
 
