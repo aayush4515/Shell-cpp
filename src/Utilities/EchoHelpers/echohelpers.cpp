@@ -162,13 +162,13 @@ bool hasBackslashOutsideQuotes(const string& raw) {
     if ((posFirstSingleQuote != string::npos) && (posFirstDoubleQuote != string::npos)) {
         // single quote comes before double quote
         if (posFirstSingleQuote < posFirstDoubleQuote) {
-            if ((posFirstBackslash > posFirstSingleQuote)) {
+            if ((posFirstBackslash < posFirstSingleQuote)) {
                 return true;
             }
         }
         // double quote comes before single quote
         else if (posFirstDoubleQuote < posFirstSingleQuote) {
-            if ((posFirstBackslash > posFirstDoubleQuote)) {
+            if ((posFirstBackslash < posFirstDoubleQuote)) {
                 return true;
             }
         }
