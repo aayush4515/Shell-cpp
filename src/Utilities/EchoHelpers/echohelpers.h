@@ -16,6 +16,6 @@ using namespace std;
 // string handleSingleQuotes(string str);
 // vector<string> tokenize(const string& line);
 
-string processEchoArgument(const string& raw);
+string stripQuotesAndCollapse(const string& raw);
 
 #endif

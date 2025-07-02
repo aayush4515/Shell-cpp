@@ -79,30 +79,66 @@
 
 // // }
 
-string processEchoArgument(const string& raw) {
-  string out;
-  bool  inSingle     = false;   // are we inside single quotes?
-  bool  lastWasSpace = false;   // to collapse consecutive blanks
+// string processEchoArgument(const string& raw) {
+//   string out;
+//   bool  inSingle     = false;   // are we inside single quotes?
+//   bool  lastWasSpace = false;   // to collapse consecutive blanks
 
-  for (char ch : raw) {
-      if (ch == '\'') {                 // toggle quote mode
-          inSingle = !inSingle;
-          continue;                     // don’t copy the quote itself
-      }
+//   for (char ch : raw) {
+//       if (ch == '\'') {                 // toggle quote mode
+//           inSingle = !inSingle;
+//           continue;                     // don’t copy the quote itself
+//       }
 
-      if (std::isspace(static_cast<unsigned char>(ch)) && !inSingle) {
-          if (lastWasSpace) continue;   // collapse spaces outside quotes
-          out.push_back(' ');
-          lastWasSpace = true;
-      } else {
-          out.push_back(ch);
-          lastWasSpace = false;
-      }
-  }
+//       if (std::isspace(static_cast<unsigned char>(ch)) && !inSingle) {
+//           if (lastWasSpace) continue;   // collapse spaces outside quotes
+//           out.push_back(' ');
+//           lastWasSpace = true;
+//       } else {
+//           out.push_back(ch);
+//           lastWasSpace = false;
+//       }
+//   }
 
-  if (inSingle) {
-      std::cerr << "myshell: unmatched single quote\n";
-      return {};
-  }
-  return out;
+//   if (inSingle) {
+//       std::cerr << "myshell: unmatched single quote\n";
+//       return {};
+//   }
+//   return out;
+// }
+
+string stripQuotesAndCollapse(const string& raw)
+{
+    string out;
+    char quote = '\0';          // '\0' = outside quotes; otherwise holds ' or "
+    bool lastWasSpace = false;  // for collapsing blanks outside quotes
+
+    for (char ch : raw) {
+        // 1.  Opening / closing quote?
+        if ((ch == '\'' || ch == '"')) {
+            if (quote == '\0') {          // entering quoted section
+                quote = ch;
+                continue;                 // don’t copy the quote itself
+            } else if (ch == quote) {     // leaving quoted section
+                quote = '\0';
+                continue;                 // don’t copy the quote either
+            }
+            // Different quote char inside current quotes → copy literally
+        }
+
+        // 2.  Whitespace outside quotes: collapse runs to a single space
+        if (isspace(static_cast<unsigned char>(ch)) && quote == '\0') {
+            if (lastWasSpace) continue;   // already added one space
+            out.push_back(' ');
+            lastWasSpace = true;
+        } else {
+            out.push_back(ch);
+            lastWasSpace = false;
+        }
+    }
+
+    if (quote != '\0')
+        cerr << "myshell: unmatched " << quote << " quote\n";
+
+    return out;
 }

@@ -61,7 +61,7 @@ void echo(string& input) {
     }
 
     string rawArgs = input.substr(firstSpace + 1);   // everything after “echo ”
-    string echoStr = processEchoArgument(rawArgs);
+    string echoStr = stripQuotesAndCollapse(rawArgs);
 
     std::cout << echoStr << '\n';
 }

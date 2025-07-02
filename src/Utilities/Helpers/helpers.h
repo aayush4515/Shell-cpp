@@ -16,5 +16,4 @@ bool isExternalExecutableCommand(const string& cmd);
 string extractCommand(const string& input);
 bool isValidCommand(string cmd);
 
-
 #endif
