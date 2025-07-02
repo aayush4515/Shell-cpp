@@ -162,6 +162,10 @@ bool hasBackslashOutsideQuotes(const string& raw) {
     if (posFirstBackslash == string::npos) {
         return false;
     }
+    // no quotes and has backslash
+    if ((raw.find('\'') == string::npos) && (raw.find('"') == string::npos) && (raw.find('\\') != string::npos)) {
+        return true;
+    }
 
     // both single and double quotes exits
     if ((posFirstSingleQuote != string::npos) && (posFirstDoubleQuote != string::npos)) {
