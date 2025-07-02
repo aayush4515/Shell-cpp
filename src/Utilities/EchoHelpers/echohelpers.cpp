@@ -156,7 +156,12 @@ string stripQuotesAndCollapse(const string& raw)
 bool hasBackslashOutsideQuotes(const string& raw) {
     size_t posFirstSingleQuote = raw.find('\'') != string::npos ? raw.find('\'') : string::npos;
     size_t posFirstDoubleQuote = raw.find('"') != string::npos ? raw.find('"') : string::npos;
-    size_t posFirstBackslash = raw.find('\\');
+    size_t posFirstBackslash = raw.find('\\') != string::npos ? raw.find('\\') : string::npos;
+
+    // no backslash
+    if (posFirstBackslash == string::npos) {
+        return false;
+    }
 
     // both single and double quotes exits
     if ((posFirstSingleQuote != string::npos) && (posFirstDoubleQuote != string::npos)) {
@@ -174,6 +179,19 @@ bool hasBackslashOutsideQuotes(const string& raw) {
         }
         return false;
     }
+    // only single quotes exist
+    else if ((posFirstSingleQuote != string::npos) && (posFirstDoubleQuote == string::npos)) {
+        if (posFirstBackslash < posFirstSingleQuote) {
+            return true;
+        }
+    }
+    // only double quotes exist
+    else if ((posFirstSingleQuote == string::npos) && (posFirstDoubleQuote != string::npos)){
+        if (posFirstBackslash < posFirstDoubleQuote) {
+            return true;
+        }
+    }
+
     return false;
 }
 
