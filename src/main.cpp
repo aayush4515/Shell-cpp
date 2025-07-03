@@ -28,21 +28,39 @@ void repl(string& input) {
       }
 
       bool redirectStdout = false;
+      bool redirectStderr = false;
       string outRedirectPath;
+      string errRedirectPath;
 
-      // checks if there is a redirection request. If yes: fetches the redirection path and trims the input
-      if (input.find('>') != string::npos || input.find("1>") != string::npos || input.find(">2") != string::npos) {
-        redirectStdout = true;
+      // Parse stderr redirection ("2> file")
+      {
+        if (input.find("2>") != string::npos) {
+          redirectStderr = true;
 
-        // get the redirection path
-        size_t start = input.find('>') + 2;                  // cmd > target: start is 2 positions after '>'
-        size_t end = input.length();                         // end is the postion of last character
-        outRedirectPath = input.substr(start, end - start);
+          // get the redirection path
+          size_t start = input.find("2>") + 2;                  // cmd > target: start is 2 positions after '>'
+          size_t end = input.length();                         // end is the postion of last character
+          errRedirectPath = input.substr(start, end - start);
 
-        // trim the input to exlude outRedirectPath
-        input = input.substr(0, start - 3);
+          // trim the input to exlude outRedirectPath
+          input = input.substr(0, start - 3);
+        }
       }
 
+      // Parse stdout redirection ("> file" or "1> file")
+      {
+        if (input.find('>') != string::npos || input.find("1>") != string::npos) {
+          redirectStdout = true;
+
+          // get the redirection path
+          size_t start = input.find('>') + 2;                  // cmd > target: start is 2 positions after '>'
+          size_t end = input.length();                         // end is the postion of last character
+          outRedirectPath = input.substr(start, end - start);
+
+          // trim the input to exlude errRedirectPath
+          input = input.substr(0, start - 3);
+        }
+      }
       // extract the command
       string command = extractCommand(input);
 
@@ -50,9 +68,10 @@ void repl(string& input) {
 
       // is it a built-in command?
       if (isBuiltin(command)) {
-        int savedStdout = -1;
-        int outFd       = -1;
+        int savedStdout = -1, savedStderr = -1;
+        int outFd       = -1, errFd = -1;
 
+        // Redirect stdout if requested
         if (redirectStdout) {
             // 1) Save the real stdout
             savedStdout = dup(STDOUT_FILENO);
@@ -69,7 +88,7 @@ void repl(string& input) {
             if (outFd < 0) {
                 perror("open");  // failed to open file
             } else {
-                // 3) Redirect stdout → file
+                // 3) Redirect stdout -> file
                 if (dup2(outFd, STDOUT_FILENO) < 0) {
                     perror("dup2");  // failed to redirect
                 }
@@ -77,9 +96,33 @@ void repl(string& input) {
             }
         }
 
-        // 4) Run the builtin; all std::cout now goes into `outRedirectPath`
+        // Redirect stderr if requested
+        if (redirectStderr) {
+          // save the real stderr
+          savedStderr = dup(STDERR_FILENO);
+          if (savedStderr < 0) {
+            perror("dup");  // failed to save stderr
+          }
+
+          // open or create the target file
+          errFd = open(errRedirectPath.c_str(),
+                      O_CREAT, O_TRUNC, O_WRONLY, 0644);
+          if (errFd < 0) {
+            perror("open"); // failed to open file
+          } else {
+            // redirect stderr -> file
+            if (dup2(errFd, STDERR_FILENO) < 0) {
+              perror("dup2");   // failed to redirect
+            }
+            close(errFd);   // no longer needed
+          }
+
+        }
+
+        // 4) Run the builtin; all cout and cerr are redirected to the respective files
         runBuiltin(command, input);
 
+        // Flush and restore stdout and stderr
         if (redirectStdout) {
             // 5a) Flush C++/C buffers so nothing is left unwritten
             cout.flush();
@@ -87,14 +130,22 @@ void repl(string& input) {
 
             // 5b) Restore the original stdout
             if (dup2(savedStdout, STDOUT_FILENO) < 0) {
-                perror("dup2 restore");
+                perror("restore stdout");
             }
             close(savedStdout);
         }
+        if (redirectStderr) {
+          fflush(stderr);
+          if (dup2(savedStderr, STDERR_FILENO) < 0) {
+            perror("restore stderr");
+          }
+          close(savedStderr);
+        }
+
       }
       // is it an external exe command?
       else if (isExternalExecutableCommand(command)) {
-        if (redirectStdout) {
+        if (redirectStdout || redirectStderr) {
             // 1) Split the trimmed input into arguments
             std::istringstream iss(input);
             std::vector<std::string> parts;
@@ -116,34 +167,40 @@ void repl(string& input) {
                 perror("fork");
             }
             else if (pid == 0) {
-                // CHILD: open file, dup2, execvp
-                int fd = open(
-                    outRedirectPath.c_str(),
-                    O_CREAT | O_TRUNC | O_WRONLY,
-                    0644
-                );
-                if (fd < 0) {
-                    perror("open for stdout");
+                // CHILD: set up redirections
+                if (redirectStdout) {
+                  int fd = open(outRedirectPath.c_str(),
+                                O_CREAT | O_TRUNC | O_WRONLY, 0644);
+                  if (fd < 0) {
+                    perror("open stdout");
                     _exit(1);
-                }
-                if (dup2(fd, STDOUT_FILENO) < 0) {
-                    perror("dup2 stdout");
+                  }
+                  if (dup2(fd, STDOUT_FILENO) < 0) {
+                      perror("dup2 stdout");
+                      _exit(1);
+                  }
+                  close(fd);
+              }
+              if (redirectStderr) {
+                  int fd = open(errRedirectPath.c_str(),
+                                O_CREAT | O_TRUNC | O_WRONLY, 0644);
+                  if (fd < 0) {
+                    perror("open stderr");
                     _exit(1);
-                }
-                close(fd);
+                  }
+                  if (dup2(fd, STDERR_FILENO) < 0) {
+                      perror("dup2 stderr");
+                      _exit(1);
+                  }
+                  close(fd);
+              }
 
-                execvp(argv[0], argv.data());
-                // if execvp returns, it failed
-                perror("execvp");
-                _exit(1);
-            }
-            else {
-                // PARENT: wait for the child to finish
-                int status;
-                if (waitpid(pid, &status, 0) < 0) {
-                    perror("waitpid");
-                }
-            }
+              // Execute the command
+              execvp(argv[0], argv.data());
+              // if execvp returns, it failed
+              perror("execvp");
+              _exit(1);
+          }
         }
         else {
             // no redirection: just hand off to /bin/sh
