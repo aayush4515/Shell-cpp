@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <filesystem>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstdio>
@@ -73,31 +74,46 @@ void repl(string& input) {
 
         // Redirect stdout if requested
         if (redirectStdout) {
-            // 1) Save the real stdout
-            savedStdout = dup(STDOUT_FILENO);
-            if (savedStdout < 0) {
-                perror("dup");  // failed to save stdout
+          // make sure the directory exists
+          {
+            fs::path p{outRedirectPath};
+            if (auto dir = p.parent_path(); !dir.empty()) {
+                fs::create_directories(dir);
             }
+          }
 
-            // 2) Open (or create) the target file
-            outFd = open(
-              outRedirectPath.c_str(),
-              O_CREAT | O_TRUNC | O_WRONLY,
-              0644
-            );
-            if (outFd < 0) {
-                perror("open");  // failed to open file
-            } else {
-                // 3) Redirect stdout -> file
-                if (dup2(outFd, STDOUT_FILENO) < 0) {
-                    perror("dup2");  // failed to redirect
-                }
-                close(outFd);  // no longer needed
-            }
+          // 1) Save the real stdout
+          savedStdout = dup(STDOUT_FILENO);
+          if (savedStdout < 0) {
+              perror("dup");  // failed to save stdout
+          }
+
+          // 2) Open (or create) the target file
+          outFd = open(
+            outRedirectPath.c_str(),
+            O_CREAT | O_TRUNC | O_WRONLY,
+            0644
+          );
+          if (outFd < 0) {
+              perror("open");  // failed to open file
+          } else {
+              // 3) Redirect stdout -> file
+              if (dup2(outFd, STDOUT_FILENO) < 0) {
+                  perror("dup2");  // failed to redirect
+              }
+              close(outFd);  // no longer needed
+          }
         }
 
         // Redirect stderr if requested
         if (redirectStderr) {
+          // make sure the directory exists
+          {
+            fs::path p{errRedirectPath};
+            if (auto dir = p.parent_path(); !dir.empty()) {
+                fs::create_directories(dir);
+            }
+          }
           // save the real stderr
           savedStderr = dup(STDERR_FILENO);
           if (savedStderr < 0) {
@@ -169,6 +185,13 @@ void repl(string& input) {
             else if (pid == 0) {
               // CHILD: set up redirections
               if (redirectStdout) {
+                // make sure the directory exists
+                {
+                  fs::path p{outRedirectPath};
+                  if (auto dir = p.parent_path(); !dir.empty()) {
+                      fs::create_directories(dir);
+                  }
+                }
                 int fd = open(outRedirectPath.c_str(),
                               O_CREAT | O_TRUNC | O_WRONLY, 0644);
                 if (fd < 0) {
@@ -182,6 +205,13 @@ void repl(string& input) {
                 close(fd);
               }
               if (redirectStderr) {
+                // make sure the directory exists
+                {
+                  fs::path p{outRedirectPath};
+                  if (auto dir = p.parent_path(); !dir.empty()) {
+                      fs::create_directories(dir);
+                  }
+                }
                 //cout << "Redirecterr path: " << errRedirectPath << endl;
                 int fd = open(errRedirectPath.c_str(),
                               O_CREAT | O_TRUNC | O_WRONLY, 0644);
