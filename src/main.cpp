@@ -26,8 +26,11 @@ void repl(string& input) {
         cout.flush();
       }
 
-      // read the prompt
-      getline(cin, input);
+      if (!getline(cin, input))
+        break;
+
+      // // read the prompt
+      // getline(cin, input);
 
       // the exit bulletin
       if (input == "exit 0") {
