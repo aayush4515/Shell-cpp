@@ -39,7 +39,7 @@ void repl(string& input) {
           redirectStderr = true;
 
           // get the redirection path
-          size_t start = input.find("2>") + 2;                  // cmd > target: start is 2 positions after '>'
+          size_t start = input.find(">") + 2;                  // cmd > target: start is 2 positions after '>'
           size_t end = input.length();                         // end is the postion of last character
           errRedirectPath = input.substr(start, end - start);
 
@@ -74,14 +74,6 @@ void repl(string& input) {
 
         // Redirect stdout if requested
         if (redirectStdout) {
-          // make sure the directory exists
-          {
-            fs::path p{outRedirectPath};
-            if (auto dir = p.parent_path(); !dir.empty()) {
-                fs::create_directories(dir);
-            }
-          }
-
           // 1) Save the real stdout
           savedStdout = dup(STDOUT_FILENO);
           if (savedStdout < 0) {
@@ -107,13 +99,6 @@ void repl(string& input) {
 
         // Redirect stderr if requested
         if (redirectStderr) {
-          // make sure the directory exists
-          {
-            fs::path p{errRedirectPath};
-            if (auto dir = p.parent_path(); !dir.empty()) {
-                fs::create_directories(dir);
-            }
-          }
           // save the real stderr
           savedStderr = dup(STDERR_FILENO);
           if (savedStderr < 0) {
@@ -185,13 +170,6 @@ void repl(string& input) {
             else if (pid == 0) {
               // CHILD: set up redirections
               if (redirectStdout) {
-                // make sure the directory exists
-                {
-                  fs::path p{outRedirectPath};
-                  if (auto dir = p.parent_path(); !dir.empty()) {
-                      fs::create_directories(dir);
-                  }
-                }
                 int fd = open(outRedirectPath.c_str(),
                               O_CREAT | O_TRUNC | O_WRONLY, 0644);
                 if (fd < 0) {
@@ -205,13 +183,6 @@ void repl(string& input) {
                 close(fd);
               }
               if (redirectStderr) {
-                // make sure the directory exists
-                {
-                  fs::path p{outRedirectPath};
-                  if (auto dir = p.parent_path(); !dir.empty()) {
-                      fs::create_directories(dir);
-                  }
-                }
                 //cout << "Redirecterr path: " << errRedirectPath << endl;
                 int fd = open(errRedirectPath.c_str(),
                               O_CREAT | O_TRUNC | O_WRONLY, 0644);
