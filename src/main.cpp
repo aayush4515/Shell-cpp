@@ -30,7 +30,8 @@ void repl(string& input) {
       bool redirectStdout = false;
       string outRedirectPath;
 
-      if (input.find('>') != string::npos || input.find("1>") != string::npos) {
+      // checks if there is a redirection request. If yes: fetches the redirection path and trims the input
+      if (input.find('>') != string::npos || input.find("1>") != string::npos || input.find(">2") != string::npos) {
         redirectStdout = true;
 
         // get the redirection path
@@ -44,6 +45,8 @@ void repl(string& input) {
 
       // extract the command
       string command = extractCommand(input);
+
+      //run(command, input);
 
       // is it a built-in command?
       if (isBuiltin(command)) {
