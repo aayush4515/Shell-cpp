@@ -176,22 +176,22 @@ void repl(string& input) {
                   _exit(1);
                 }
                 if (dup2(fd, STDOUT_FILENO) < 0) {
-                    perror("dup2 stdout");
-                    _exit(1);
+                  perror("dup2 stdout");
+                  _exit(1);
                 }
                 close(fd);
               }
               if (redirectStderr) {
-                cout << "Redirecterr path: " << errRedirectPath << endl;
+                //cout << "Redirecterr path: " << errRedirectPath << endl;
                 int fd = open(errRedirectPath.c_str(),
                               O_CREAT | O_TRUNC | O_WRONLY, 0644);
                 if (fd < 0) {
-                  perror("open stderr");
+                  //perror("open stderr");
                   _exit(1);
                 }
                 if (dup2(fd, STDERR_FILENO) < 0) {
-                    perror("dup2 stderr");
-                    _exit(1);
+                  perror("dup2 stderr");
+                  _exit(1);
                 }
                 close(fd);
               }
