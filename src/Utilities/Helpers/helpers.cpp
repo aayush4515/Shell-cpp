@@ -111,16 +111,6 @@ void searchPath (string targetFile) {
   cout << targetFile << ": not found" << endl;
 }
 
-// bool isExecutableCommand(string cmd) {
-//   vector<string> paths = extractPath();
-//   for (const auto& path : paths) {
-//     if (path.find(cmd) != string::npos) {
-//       return true;
-//     }
-//   }
-//   return false;
-// }
-
 bool isExternalExecutableCommand(const string& cmd) {
   vector<string> dirs = extractPath();
 

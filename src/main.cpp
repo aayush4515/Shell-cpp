@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <sstream>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "Utilities/Commands/commands.h"
 
 using namespace std;
@@ -88,9 +90,6 @@ void repl(string& input) {
         }
       }
       // is it an external exe command?
-      // else if (isExternalExecutableCommand(command)) {
-      //   system(input.c_str());
-      // }
       else if (isExternalExecutableCommand(command)) {
         if (redirectStdout) {
             // 1) Split the trimmed input into arguments
