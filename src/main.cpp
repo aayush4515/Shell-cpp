@@ -15,10 +15,16 @@ namespace fs = filesystem;
 
 // REPL logic
 void repl(string& input) {
+    bool interactive = isatty(STDIN_FILENO);
+
     // REPL
     while (true) {
-      // prompt
-      cout << "$ ";
+      // only prompt if stdin is a TTY
+      if (interactive) {
+        cout << "$ ";
+        // make sure it actually appears
+        cout.flush();
+      }
 
       // read the prompt
       getline(cin, input);
