@@ -26,11 +26,8 @@ void repl(string& input) {
         cout.flush();
       }
 
-      if (!getline(cin, input))
-        break;
-
-      // // read the prompt
-      // getline(cin, input);
+      // read the prompt
+      getline(cin, input);
 
       // the exit bulletin
       if (input == "exit 0") {
@@ -211,13 +208,20 @@ void repl(string& input) {
               // if execvp returns, it failed
               perror("execvp");
               _exit(1);
-          }
+            }
+            else {
+              // PARENT: wait
+              int status;
+              if (waitpid(pid, &status, 0) < 0) {
+                  perror("waitpid");
+              }
+            }
         }
         else {
             // no redirection: just hand off to /bin/sh
             system(input.c_str());
         }
-    }
+      }
 
      // output as invalid command
       else {
