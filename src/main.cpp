@@ -37,9 +37,26 @@ void repl(string& input) {
       bool redirectStdout = false;
       bool redirectStderr = false;
       bool appendStdout = false;
+      bool appendStderr = false;
       string outRedirectPath;
       string errRedirectPath;
       string appendOutPath;
+      string appendErrPath;
+
+      // Parse append stderr symbol
+      {
+        if (input.find("2>>") != string::npos) {
+          appendStderr = true;
+
+          // get the redirection path
+          size_t start = input.find('>') + 3;                  // cmd 1>> target: start is 3 positions after first '>'
+          size_t end = input.length();                         // end is the postion of last character
+          appendErrPath = input.substr(start, end - start);
+
+          // trim the input to exlude appendOutPath
+          input = input.substr(0, start - 4);
+        }
+      }
 
       // Parse append stdout symbol
       {
@@ -93,7 +110,7 @@ void repl(string& input) {
       // is it a built-in command?
       if (isBuiltin(command)) {
         int savedStdout = -1, savedStderr = -1;
-        int outFd       = -1, errFd = -1, appendFd = -1;
+        int outFd       = -1, errFd = -1, appendFd = -1, appendErrFd = -1;
 
         // Redirect stdout if requested
         if (redirectStdout) {
@@ -143,7 +160,7 @@ void repl(string& input) {
 
         }
 
-        // process append if requested
+        // process stdout append if requested
         if (appendStdout) {
           savedStdout = dup(STDOUT_FILENO);
           if (savedStdout < 0) {
@@ -151,12 +168,30 @@ void repl(string& input) {
           }
           appendFd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
           if (appendFd < 0) {
-            perror("open");
+            perror("append");
           } else {
             if (dup2(appendFd, STDOUT_FILENO) < 0) {
               perror("dup2");
             }
             close(appendFd);
+          }
+        }
+
+        // process stderr append if requested
+        if (appendStderr) {
+          savedStderr = dup(STDERR_FILENO);
+          if (savedStderr < 0) {
+            perror("dup");
+          }
+
+          appendErrFd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+          if (appendErrFd < 0) {
+            perror("append");
+          } else {
+            if (dup2(appendErrFd, STDERR_FILENO) < 0) {
+              perror("dup2");
+            }
+            close (appendErrFd);
           }
         }
 
@@ -191,11 +226,20 @@ void repl(string& input) {
           }
           close(savedStdout);
         }
+        if (appendErrFd) {
+          cout.flush();
+          fflush(stderr);
+
+          if (dup2(savedStderr, STDERR_FILENO) < 0) {
+            perror("restore stderr");
+          }
+          close(savedStderr);
+        }
 
       }
       // is it an external exe command?
       else if (isExternalExecutableCommand(command)) {
-        if (redirectStdout || redirectStderr || appendStdout) {
+        if (redirectStdout || redirectStderr || appendStdout || appendStderr) {
             // 1) Split the trimmed input into arguments
             std::istringstream iss(input);
             std::vector<std::string> parts;
