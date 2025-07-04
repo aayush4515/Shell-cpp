@@ -232,7 +232,7 @@ void repl(string& input) {
           }
           close(savedStdout);
         }
-        if (appendErrFd) {
+        if (appendStderr) {
           // cout << "Appending stderr" << endl;
           fflush(stderr);
 
