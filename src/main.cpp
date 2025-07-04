@@ -49,7 +49,7 @@ void repl(string& input) {
           appendStderr = true;
 
           // get the redirection path
-          size_t start = input.find('>') + 3;                  // cmd 1>> target: start is 3 positions after first '>'
+          size_t start = input.find('>') + 3;                  // cmd 2>> target: start is 3 positions after first '>'
           size_t end = input.length();                         // end is the postion of last character
           appendErrPath = input.substr(start, end - start);
 
@@ -296,6 +296,18 @@ void repl(string& input) {
                   _exit(1);
                 }
                 if(dup2(fd, STDOUT_FILENO) < 0) {
+                  perror("dup2 stdout");
+                  _exit(1);
+                }
+                close(fd);
+              }
+              if (appendStderr) {
+                int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+
+                if (fd < 0) {
+                  _exit(1);
+                }
+                if(dup2(fd, STDERR_FILENO) < 0) {
                   perror("dup2 stdout");
                   _exit(1);
                 }
