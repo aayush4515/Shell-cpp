@@ -60,7 +60,7 @@ void repl(string& input) {
 
       // Parse append stdout symbol
       {
-        if (input.find(">>") != string::npos || input.find("1>>") != string::npos) {
+        if (input.find("1>>") != string::npos || input.find(">>") != string::npos) {
           appendStdout = true;
 
           // get the redirection path
