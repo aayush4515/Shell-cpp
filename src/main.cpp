@@ -228,7 +228,7 @@ void repl(string& input) {
           close(savedStdout);
         }
         if (appendErrFd) {
-          cout << "Appending stderr" << endl;
+          // cout << "Appending stderr" << endl;
           fflush(stderr);
 
           if (dup2(savedStderr, STDERR_FILENO) < 0) {
