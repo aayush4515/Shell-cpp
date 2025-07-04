@@ -211,6 +211,7 @@ void repl(string& input) {
             close(savedStdout);
         }
         if (redirectStderr) {
+          cout << "Redirecting stderr" << endl;
           fflush(stderr);
           if (dup2(savedStderr, STDERR_FILENO) < 0) {
             perror("restore stderr");
@@ -227,6 +228,7 @@ void repl(string& input) {
           close(savedStdout);
         }
         if (appendErrFd) {
+          cout << "Appending stderr" << endl;
           fflush(stderr);
 
           if (dup2(savedStderr, STDERR_FILENO) < 0) {
