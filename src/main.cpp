@@ -90,7 +90,7 @@ void repl(string& input) {
 
       // Parse stdout redirection ("> file" or "1> file")
       {
-        if (input.find('>') != string::npos || input.find("1>") != string::npos)  {
+        if (input.find("1>") != string::npos || input.find('>') != string::npos)  {
           redirectStdout = true;
 
           // get the redirection path
