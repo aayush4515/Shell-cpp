@@ -36,8 +36,25 @@ void repl(string& input) {
 
       bool redirectStdout = false;
       bool redirectStderr = false;
+      bool appendStdout = false;
       string outRedirectPath;
       string errRedirectPath;
+      string appendOutPath;
+
+      // Parse append stdout symbol
+      {
+        if (input.find(">>") != string::npos || input.find("1>>") != string::npos) {
+          appendStdout = true;
+
+          // get the redirection path
+          size_t start = input.find('>') + 3;                  // cmd 1>> target: start is 3 positions after first '>'
+          size_t end = input.length();                         // end is the postion of last character
+          appendOutPath = input.substr(start, end - start);
+
+          // trim the input to exlude appendOutPath
+          input = input.substr(0, start - 4);
+        }
+      }
 
       // Parse stderr redirection ("2> file")
       {
@@ -56,7 +73,7 @@ void repl(string& input) {
 
       // Parse stdout redirection ("> file" or "1> file")
       {
-        if (input.find('>') != string::npos || input.find("1>") != string::npos) {
+        if (input.find('>') != string::npos || input.find("1>") != string::npos)  {
           redirectStdout = true;
 
           // get the redirection path
@@ -76,7 +93,7 @@ void repl(string& input) {
       // is it a built-in command?
       if (isBuiltin(command)) {
         int savedStdout = -1, savedStderr = -1;
-        int outFd       = -1, errFd = -1;
+        int outFd       = -1, errFd = -1, appendFd = -1;
 
         // Redirect stdout if requested
         if (redirectStdout) {
@@ -113,7 +130,7 @@ void repl(string& input) {
 
           // open or create the target file
           errFd = open(errRedirectPath.c_str(),
-                      O_CREAT, O_TRUNC, O_WRONLY, 0644);
+                      O_CREAT | O_TRUNC | O_WRONLY, 0644);
           if (errFd < 0) {
             perror("open"); // failed to open file
           } else {
@@ -124,6 +141,23 @@ void repl(string& input) {
             close(errFd);   // no longer needed
           }
 
+        }
+
+        // process append if requested
+        if (appendStdout) {
+          savedStdout = dup(STDOUT_FILENO);
+          if (savedStdout < 0) {
+            perror("dup");
+          }
+          appendFd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+          if (appendFd < 0) {
+            perror("open");
+          } else {
+            if (dup2(appendFd, STDOUT_FILENO) < 0) {
+              perror("dup2");
+            }
+            close(appendFd);
+          }
         }
 
         // 4) Run the builtin; all cout and cerr are redirected to the respective files
@@ -148,11 +182,20 @@ void repl(string& input) {
           }
           close(savedStderr);
         }
+        if (appendStdout) {
+          cout.flush();
+          fflush(stdout);
+
+          if (dup2(savedStdout, STDOUT_FILENO) < 0) {
+            perror("restore stdout");
+          }
+          close(savedStdout);
+        }
 
       }
       // is it an external exe command?
       else if (isExternalExecutableCommand(command)) {
-        if (redirectStdout || redirectStderr) {
+        if (redirectStdout || redirectStderr || appendStdout) {
             // 1) Split the trimmed input into arguments
             std::istringstream iss(input);
             std::vector<std::string> parts;
@@ -202,6 +245,18 @@ void repl(string& input) {
                 }
                 close(fd);
               }
+              if (appendStdout) {
+                int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+
+                if (fd < 0) {
+                  _exit(1);
+                }
+                if(dup2(fd, STDOUT_FILENO) < 0) {
+                  perror("dup2 stdout");
+                  _exit(1);
+                }
+                close(fd);
+              }
 
               // Execute the command
               execvp(argv[0], argv.data());
@@ -211,9 +266,12 @@ void repl(string& input) {
             }
             else {
               // PARENT: wait
-              int status;
-              if (waitpid(pid, &status, 0) < 0) {
-                  perror("waitpid");
+              // int status;
+              // if (waitpid(pid, &status, 0) < 0) {
+              //     perror("waitpid");
+              // }
+              if (wait(0) == 1) {
+                perror("wait");
               }
             }
         }
