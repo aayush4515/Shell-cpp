@@ -191,7 +191,7 @@ void repl(string& input) {
             if (dup2(appendErrFd, STDERR_FILENO) < 0) {
               perror("dup2");
             }
-            close (appendErrFd);
+            close(appendErrFd);
           }
         }
 
