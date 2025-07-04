@@ -60,46 +60,52 @@ void repl(string& input) {
 
       // Parse append stdout symbol
       {
-        if (input.find("1>>") != string::npos || input.find(">>") != string::npos) {
-          appendStdout = true;
+        if (!appendStderr && !redirectStdout && !redirectStderr) {
+          if (input.find("1>>") != string::npos || input.find(">>") != string::npos) {
+            appendStdout = true;
 
-          // get the redirection path
-          size_t start = input.find('>') + 3;                  // cmd 1>> target: start is 3 positions after first '>'
-          size_t end = input.length();                         // end is the postion of last character
-          appendOutPath = input.substr(start, end - start);
+            // get the redirection path
+            size_t start = input.find('>') + 3;                  // cmd 1>> target: start is 3 positions after first '>'
+            size_t end = input.length();                         // end is the postion of last character
+            appendOutPath = input.substr(start, end - start);
 
-          // trim the input to exlude appendOutPath
-          input = input.substr(0, start - 4);
+            // trim the input to exlude appendOutPath
+            input = input.substr(0, start - 4);
+          }
         }
       }
 
       // Parse stderr redirection ("2> file")
       {
-        if (input.find("2>") != string::npos) {
-          redirectStderr = true;
+        if (!appendStderr && !appendStdout && !redirectStdout) {
+          if (input.find("2>") != string::npos) {
+            redirectStderr = true;
 
-          // get the redirection path
-          size_t start = input.find(">") + 2;                  // cmd > target: start is 2 positions after '>'
-          size_t end = input.length();                         // end is the postion of last character
-          errRedirectPath = input.substr(start, end - start);
+            // get the redirection path
+            size_t start = input.find(">") + 2;                  // cmd > target: start is 2 positions after '>'
+            size_t end = input.length();                         // end is the postion of last character
+            errRedirectPath = input.substr(start, end - start);
 
-          // trim the input to exlude outRedirectPath
-          input = input.substr(0, start - 3);
+            // trim the input to exlude outRedirectPath
+            input = input.substr(0, start - 3);
+          }
         }
       }
 
       // Parse stdout redirection ("> file" or "1> file")
       {
-        if (input.find("1>") != string::npos || input.find('>') != string::npos)  {
-          redirectStdout = true;
+        if (!appendStderr && !appendStdout && !redirectStderr) {
+          if (input.find("1>") != string::npos || input.find('>') != string::npos)  {
+            redirectStdout = true;
 
-          // get the redirection path
-          size_t start = input.find('>') + 2;                  // cmd > target: start is 2 positions after '>'
-          size_t end = input.length();                         // end is the postion of last character
-          outRedirectPath = input.substr(start, end - start);
+            // get the redirection path
+            size_t start = input.find('>') + 2;                  // cmd > target: start is 2 positions after '>'
+            size_t end = input.length();                         // end is the postion of last character
+            outRedirectPath = input.substr(start, end - start);
 
-          // trim the input to exlude errRedirectPath
-          input = input.substr(0, start - 3);
+            // trim the input to exlude errRedirectPath
+            input = input.substr(0, start - 3);
+          }
         }
       }
       // extract the command
