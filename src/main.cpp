@@ -227,7 +227,6 @@ void repl(string& input) {
           close(savedStdout);
         }
         if (appendErrFd) {
-          cout.flush();
           fflush(stderr);
 
           if (dup2(savedStderr, STDERR_FILENO) < 0) {
@@ -308,7 +307,7 @@ void repl(string& input) {
                   _exit(1);
                 }
                 if(dup2(fd, STDERR_FILENO) < 0) {
-                  perror("dup2 stdout");
+                  perror("dup2 stderr");
                   _exit(1);
                 }
                 close(fd);
