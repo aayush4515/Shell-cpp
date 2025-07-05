@@ -95,3 +95,7 @@ void type(string& input) {
 void history() {
   displayHistory();
 }
+
+void history(int n) {
+  displayHistory(n);
+}

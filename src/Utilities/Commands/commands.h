@@ -14,5 +14,6 @@ void echo(string& input);
 void type(string& input);
 void cd(string& input);
 void history();
+void history(int n);
 
 #endif

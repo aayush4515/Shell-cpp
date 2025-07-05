@@ -43,10 +43,37 @@ void displayHistory() {
   // open the history.txt file for reading
   ifstream inFile("history.txt");
 
-  // read from the history.txt file and display the history
+  // read from the history.txt file and store in pair: lineAndNumPairs
   while (getline(inFile, line)) {
     lineNumber++;
     cout << '\t' << lineNumber << ' ' << line << endl;
+  }
+}
+
+// overloaded function
+void displayHistory(int n) {
+  // stores each line of the history file
+  string line;
+
+  // line number
+  int lineNumber = 0;
+
+  // stores the respective linenumbers and the lines
+  vector<pair<int, string>> lineAndNumPairs;
+
+  // open the history.txt file for reading
+  ifstream inFile("history.txt");
+
+  // read from the history.txt file and store in pair: lineAndNumPairs
+  while (getline(inFile, line)) {
+    lineNumber++;
+    //cout << '\t' << lineNumber << ' ' << line << endl;
+    lineAndNumPairs.push_back({lineNumber, line});
+  }
+
+  // display the last n lines from the history using lineAndNumPairs vector
+  for (size_t i = lineAndNumPairs.size() - n; i < lineAndNumPairs.size(); i++) {
+    cout << '\t' << lineAndNumPairs[i].first << ' ' << lineAndNumPairs[i].second << endl;
   }
 }
 
@@ -162,8 +189,20 @@ void runBuiltin(string& cmd, string& input) {
     return;
   }
   else if (cmd == "history") {
-    history();
-    return;
+    // check if any int argument is provided to history command
+    if (input.find(' ') != string::npos) {
+      size_t start = input.find(' ') + 1;
+      size_t end = input.length();
+      string n = input.substr(start, end - start);
+      int num;
+      if (n != "") {
+        num = stoi(n);
+        history(num);                               // prints the last num commands from history.txt
+        return;
+      }
+    }
+    // if no arguments provided
+    history();                                      // prints all the commands in history.txt
   }
 }
 
@@ -300,10 +339,6 @@ string extractCommand(const string& input) {
   string command = input.substr(start, sizeCmd);
 
   return command;
-}
-
-void redirectOrAppend(string& input) {
-
 }
 
 void run(string& input) {

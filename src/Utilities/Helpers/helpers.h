@@ -24,5 +24,6 @@ void runBuiltin(string& cmd, string& input);
 void run(string& input);
 void addToHistory(string& input);
 void displayHistory();
+void displayHistory(int n);
 
 #endif
