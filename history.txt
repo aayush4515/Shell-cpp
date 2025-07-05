@@ -1,9 +1,0 @@
-hehe
-haha
-echo hehe
-echo haha
-type ls
-type type
-clear
-history
-clear
