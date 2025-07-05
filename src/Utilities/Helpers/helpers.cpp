@@ -601,6 +601,7 @@ void run(string& input) {
           }
 
           // Execute the command
+          cout << "here" << endl;
           execvp(argv[0], argv.data());
           // if execvp returns, it failed
           perror("execvp");
