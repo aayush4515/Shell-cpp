@@ -525,7 +525,9 @@ void run(string& input) {
     runBuiltin(command, input);
   }
   else if (isExternalExecutableCommand(command)) {
+    cout << "here1" << endl;
     if (redirectStdout || redirectStderr || appendStdout || appendStderr) {
+      cout << "here2" << endl;
         // 1) Split the trimmed input into arguments
         std::istringstream iss(input);
         std::vector<std::string> parts;
@@ -601,7 +603,6 @@ void run(string& input) {
           }
 
           // Execute the command
-          cout << "here" << endl;
           execvp(argv[0], argv.data());
           // if execvp returns, it failed
           perror("execvp");
