@@ -82,7 +82,7 @@ void type(string& input) {
   int sizeOfTypeStr = end - start;
 
   string typeArg = input.substr(start, sizeOfTypeStr);
-  vector<string> builtIns {"echo", "exit", "type", "pwd", "cd"};
+  vector<string> builtIns {"echo", "exit", "type", "pwd", "cd", "history"};
 
   if (find(builtIns.begin(), builtIns.end(), typeArg) != builtIns.end()) {
     cout << typeArg << " is a shell builtin" << endl;

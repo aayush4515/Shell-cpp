@@ -19,6 +19,34 @@ namespace fs = filesystem;
 #include <sstream>
 #include <algorithm>
 
+void setup_redirs(bool rdOut,  bool rdErr,
+  bool apOut,  bool apErr,
+  const std::string& outPath,
+  const std::string& errPath,
+  const std::string& appendOutPath,
+  const std::string& appendErrPath) {
+    if (rdOut) {                    /* stdout 1> */
+    int fd = open(outPath.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0) perror("redirect 1>");
+    if (fd >= 0) close(fd);
+    }
+    if (rdErr) {                    /* stderr 2> */
+    int fd = open(errPath.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0) perror("redirect 2>");
+    if (fd >= 0) close(fd);
+    }
+    if (apOut) {                    /* stdout >> */
+    int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0) perror("append 1>>");
+    if (fd >= 0) close(fd);
+    }
+    if (apErr) {                    /* stderr 2>> */
+    int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0) perror("append 2>>");
+    if (fd >= 0) close(fd);
+    }
+}
+
 bool hasPipe(string& input) {
   if (input.find('|') != string::npos) {
     bool inSingle = false;
@@ -356,6 +384,15 @@ void run(string& input) {
             if (pipefd[1] != -1) close(pipefd[1]);   // (already duped)
             if (inFd != STDIN_FILENO) close(inFd);
 
+            // apply redirection *only* in the last stage
+            if (i == stages.size() - 1 && (hasRedirectionOrAppend)) {
+
+                setup_redirs(redirectStdout, redirectStderr,
+                            appendStdout,  appendStderr,
+                            outRedirectPath, errRedirectPath,
+                            appendOutPath,  appendErrPath);
+            }
+
             // run built-in or external
             if (isBuiltin(stageCmd)) {
                 runBuiltin(stageCmd, stages[i]);
@@ -620,6 +657,7 @@ void run(string& input) {
     else {
         // no redirection: just hand off to /bin/sh
         system(input.c_str());
+        cout << endl;
     }
   }
 
