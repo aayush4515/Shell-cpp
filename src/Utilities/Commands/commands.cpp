@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 namespace fs = filesystem;
 
@@ -93,9 +95,29 @@ void type(string& input) {
 }
 
 void history() {
-  displayHistory();
+  //displayHistory();
+
+  // USING READLINE LIBRARY, DISPLAY HISTORY FROM MEMORY
+  HIST_ENTRY** history = history_list();
+  int i;
+
+  if (history) {
+    for (i = 0; history[i]; i++) {
+      cout << '\t' << i + 1 << ' ' <<  history[i]->line << endl;
+    }
+  }
 }
 
 void history(int n) {
-  displayHistory(n);
+  //displayHistory(n);
+
+  // USING READLINE LIBRARY, DISPLAY HISTORY FROM MEMORY
+  HIST_ENTRY** history = history_list();
+  int i;
+
+  if (history) {
+    for (i = history_length - n; history[i]; i++) {
+      cout << '\t' << i + 1 << ' ' <<  history[i]->line << endl;
+    }
+  }
 }

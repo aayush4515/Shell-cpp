@@ -1,3 +1,2 @@
-echo hehe
-echo hehe
-clear
+echo hello
+echo world

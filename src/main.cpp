@@ -11,6 +11,8 @@
 using namespace std;
 namespace fs = filesystem;
 
+vector<string> cmdHistory;
+
 // REPL logic
 void repl() {
   // stores the input
@@ -25,7 +27,7 @@ void repl() {
 
     char* input = readline("$ ");
     string inp = string(input);
-    addToHistory(inp);
+    //addToHistory(inp);                // adds to history.txt
 
     // EOF / Ctrl-D
     if (!input) {
@@ -34,10 +36,8 @@ void repl() {
 
      // don’t store empty lines
     if (*input) {
-      add_history(input);
+      add_history(input);             // adds to the memory using readline library
     }
-
-
 
     // the exit bulletin
     if (inp == "exit 0") {

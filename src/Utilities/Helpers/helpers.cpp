@@ -18,12 +18,15 @@
 
 namespace fs = filesystem;
 
+extern vector<string> cmdHistory;
+
 void addToHistory(string& input) {
   // open the history.txt file in append mode
   ofstream outFile("history.txt", ios::app);
 
   // write to the history.txt file
   if (outFile.is_open() && input != "") {
+    cmdHistory.push_back(input);
     outFile << input << endl;
   }
   else {
@@ -48,6 +51,9 @@ void displayHistory() {
     lineNumber++;
     cout << '\t' << lineNumber << ' ' << line << endl;
   }
+
+  // close the file
+  inFile.close();
 }
 
 // overloaded function
@@ -189,8 +195,30 @@ void runBuiltin(string& cmd, string& input) {
     return;
   }
   else if (cmd == "history") {
-    // check if any int argument is provided to history command
-    if (input.find(' ') != string::npos) {
+    /*
+    ---------- check if -r option is provided to the history command------------
+    */
+    if (input.find("-r") != string::npos) {
+      // extract the path to the history file
+      size_t start = input.find("-r") + 3;
+      size_t end = input.length();
+      string path = input.substr(start, end - start);
+
+      // add the contents of <path> file to memory
+      string line;
+      ifstream inFile(path);
+
+      while(getline(inFile, line)) {
+        if (!line.empty()) {
+          add_history(line.c_str());
+        }
+      }
+      inFile.close();
+    }
+    /*
+    ---------- check if any int argument is provided to history command ------------
+    */
+    if (find_if(input.begin(), input.end(), ::isdigit) != input.end()) {
       size_t start = input.find(' ') + 1;
       size_t end = input.length();
       string n = input.substr(start, end - start);
@@ -201,8 +229,11 @@ void runBuiltin(string& cmd, string& input) {
         return;
       }
     }
+
     // if no arguments provided
-    history();                                      // prints all the commands in history.txt
+    if (input == "history") {
+      history();                                      // prints all the commands in history.txt
+    }
   }
 }
 
