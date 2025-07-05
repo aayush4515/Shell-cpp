@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 
 #include "../Commands/commands.h"
+#include "../Autocompletion/autocompletion.h"
 
 namespace fs = filesystem;
 
@@ -52,6 +53,43 @@ void runBuiltin(string& cmd, string& input) {
     cd(input);
     return;
   }
+}
+
+// extracts all external commands from $PATH
+vector<string> extractExternalCommands() {
+  vector<string> dirs = extractPath();
+  vector<string> externalCommands;
+  char* currFile = NULL;
+
+  for (const auto& dir : dirs) {
+      // dir_ptr to open directory and dirent to read directory
+      DIR* dir_ptr = nullptr;
+      struct dirent* read_dir;
+
+      // open the directory
+      dir_ptr = opendir(dir.c_str());
+      // skip non-existent directories
+      if (dir_ptr == nullptr) {
+          continue;
+      }
+      // read every file in the directory
+      while ((read_dir = readdir(dir_ptr)) != NULL) {
+          // get current file name
+          currFile = read_dir->d_name;
+
+          // construct full path
+          fs::path fullPath = fs::path(dir) / currFile;
+
+          // check if the file is executable
+          if (access(fullPath.c_str(), X_OK) == 0) {
+              // the file is executable, add it to the external exe commands vector
+              externalCommands.push_back(string(currFile));
+          }
+      }
+      // close the directory
+      closedir(dir_ptr);
+  }
+  return externalCommands;
 }
 
 // extracts the path and returns splitted directories in a vector

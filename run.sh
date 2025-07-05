@@ -8,13 +8,15 @@ OUT_DIR="src"
 
 # --- Compile ---------------------------------------------------------------
 g++ -std=c++17 \
+    -I/usr/local/opt/readline/include \
     src/main.cpp \
     src/Utilities/Commands/commands.cpp \
     src/Utilities/EchoHelpers/echohelpers.cpp \
     src/Utilities/Helpers/helpers.cpp \
     src/Utilities/Autocompletion/autocompletion.cpp \
-    -o "$OUT_DIR/main" \
+    -L/usr/local/opt/readline/lib \
     -lreadline \
-    -lncurses
+    -lncurses \
+    -o "$OUT_DIR/main"
 
 echo -e "\n✅ Build succeeded → $OUT_DIR/main"

@@ -15,6 +15,7 @@ vector<string> extractPath ();
 void searchPath (string targetFile);
 bool isExternalExecutableCommand(const string& cmd);
 string extractCommand(const string& input);
+vector<string> extractExternalCommands();
 bool isValidCommand(string cmd);
 bool isBuiltin(const string& cmd);
 void runBuiltin(string& cmd, string& input);

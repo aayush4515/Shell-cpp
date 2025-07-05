@@ -28,6 +28,7 @@ void repl() {
     if (!input) {
       break;
     }
+
      // don’t store empty lines
     if (*input) {
       add_history(input);

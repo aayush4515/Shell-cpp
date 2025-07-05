@@ -1,6 +1,5 @@
 #ifndef _AUTOCOMPLETION_
 #define _AUTOCOMPLETION_
-
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
@@ -20,6 +19,5 @@ namespace fs = filesystem;
 
 char* command_generator(const char* text, int state);
 char** completer(const char* text, int start, int end);
-vector<string> extractExternalCommands();
 
 #endif
