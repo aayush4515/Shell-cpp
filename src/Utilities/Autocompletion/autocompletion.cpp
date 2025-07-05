@@ -1,4 +1,5 @@
 #include "autocompletion.h"
+using namespace std;
 
 char* command_generator(const char* text, int state)
 {
@@ -7,12 +8,12 @@ char* command_generator(const char* text, int state)
 
     if (!state) {                        // first call
         index = 0;
-        len   = std::strlen(text);
+        len   = strlen(text);
     }
 
     while (cmds[index]) {
         const char* name = cmds[index++];
-        if (std::strncmp(name, text, len) == 0)
+        if (strncmp(name, text, len) == 0)
             return strdup(name);         // readline frees this for you
     }
     return nullptr;
