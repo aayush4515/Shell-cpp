@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <fstream>
 
 #include "Utilities/Autocompletion/autocompletion.h"
 #include "Utilities/Commands/commands.h"
@@ -66,5 +67,9 @@ int main() {
 
   // start the shell
   repl();
+
+  // clear history.txt
+  ofstream outFile("history.txt");
+  outFile.close();
 
 }
