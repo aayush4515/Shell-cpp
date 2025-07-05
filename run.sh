@@ -12,6 +12,9 @@ g++ -std=c++17 \
     src/Utilities/Commands/commands.cpp \
     src/Utilities/EchoHelpers/echohelpers.cpp \
     src/Utilities/Helpers/helpers.cpp \
-    -o "$OUT_DIR/main"
+    src/Utilities/Autocompletion/autocompletion.cpp \
+    -o "$OUT_DIR/main" \
+    -lreadline \
+    -lncurses
 
 echo -e "\n✅ Build succeeded → $OUT_DIR/main"

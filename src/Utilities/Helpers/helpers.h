@@ -18,6 +18,6 @@ string extractCommand(const string& input);
 bool isValidCommand(string cmd);
 bool isBuiltin(const string& cmd);
 void runBuiltin(string& cmd, string& input);
-//void run(string& command, string& input);
+void run(string& input);
 
 #endif
