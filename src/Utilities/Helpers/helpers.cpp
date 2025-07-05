@@ -385,7 +385,7 @@ void run(string& input) {
     if (hasRedirectionOrAppend && isBuiltin(command)) {
     /*
 
-      | ------------------- HANDLE REDIRECTIONS ----------------------- |
+      | -------------------- HANDLE REDIRECTIONS ----------------------- |
 
     */
 
