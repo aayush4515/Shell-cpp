@@ -78,7 +78,7 @@ bool isValidCommand(string cmd) {
 }
 
 bool isBuiltin(const string& cmd) {
-  if (cmd == "echo" || cmd == "cd" || cmd == "type" || cmd == "pwd") {
+  if (cmd == "echo" || cmd == "cd" || cmd == "type" || cmd == "pwd" || cmd == "exit") {
     return true;
   }
   return false;
@@ -239,6 +239,10 @@ string extractCommand(const string& input) {
   return command;
 }
 
+void redirectOrAppend(string& input) {
+
+}
+
 void run(string& input) {
   bool redirectStdout = false;
       bool redirectStderr = false;
@@ -317,10 +321,66 @@ void run(string& input) {
       // extract the command
       string command = extractCommand(input);
 
-      //run(command, input);
+      /*
+
+          | ------------------- HANDLE PIPELINE ----------------------- |
+
+      */
+
+      if (hasPipe(input)) {
+        vector<string> stages = splitOnPipe(input);
+        int inFd = STDIN_FILENO;                      // read-end for current stage
+
+        for (size_t i = 0; i < stages.size(); ++i) {
+            string stageCmd = extractCommand(stages[i]);
+
+            int pipefd[2]{-1,-1};
+            if (i != stages.size() - 1 && pipe(pipefd) < 0) {
+                perror("pipe");
+                return;
+            }
+
+            pid_t pid = fork();
+            if (pid == 0) {                           // ── CHILD ──
+                dup2(inFd, STDIN_FILENO);             // read from prev. pipe
+                if (i != stages.size() - 1)
+                    dup2(pipefd[1], STDOUT_FILENO);   // write to next pipe
+
+                /* ▼ close fds we no longer need in the child */
+                if (pipefd[0] != -1) close(pipefd[0]);   // read end of new pipe
+                if (pipefd[1] != -1) close(pipefd[1]);   // (already duped)
+                if (inFd != STDIN_FILENO) close(inFd);
+
+                // run built-in or external
+                if (isBuiltin(stageCmd))
+                    runBuiltin(stageCmd, stages[i]);
+                else {
+                    // cerr << stageCmd << ": builtin not found\n";
+                    system(stageCmd.c_str());
+                }
+                _exit(0);                             // success
+            }
+
+            /* ── PARENT ── clean up and chain next stage */
+            if (inFd != STDIN_FILENO) close(inFd);     // finished with prev read end
+            if (i != stages.size() - 1) {
+                close(pipefd[1]);                      // parent closes write end
+                inFd = pipefd[0];                      // next stage reads here
+            }
+        }
+        while (wait(nullptr) > 0) { }                 // reap all children
+        return;
+      }
+
 
       // is it a built-in command?
       if (isBuiltin(command)) {
+        /*
+
+          | ------------------- HANDLE REDIRECTIONS ----------------------- |
+
+        */
+
         int savedStdout = -1, savedStderr = -1;
         int outFd       = -1, errFd = -1, appendFd = -1, appendErrFd = -1;
 
@@ -408,7 +468,9 @@ void run(string& input) {
         }
 
         // 4) Run the builtin; all cout and cerr are redirected to the respective files
-        runBuiltin(command, input);
+        if (redirectStdout || redirectStdout || appendStdout || appendStderr) {
+          runBuiltin(command, input);
+        }
 
         // Flush and restore stdout and stderr
         if (redirectStdout) {
@@ -447,6 +509,9 @@ void run(string& input) {
           }
           close(savedStderr);
         }
+
+        // run builtin if none of the above conditions meet
+        runBuiltin(command, input);
 
       }
       // is it an external exe command?
