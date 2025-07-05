@@ -216,6 +216,32 @@ void runBuiltin(string& cmd, string& input) {
       inFile.close();
     }
     /*
+    ---------- check if -w option is provided to the history command------------
+    */
+    if (input.find("-w") != string::npos) {
+      // extract the path to the history file
+      size_t start = input.find("-w") + 3;
+      size_t end = input.length();
+      string path = input.substr(start, end - start);
+
+      // add history to <path> file
+      ofstream outFile(path, ios::app);
+      if (outFile.is_open()) {
+        write_history(path.c_str());
+        outFile.close();
+      }
+    }
+      // string line;
+      // ifstream inFile(path);
+
+      // while(getline(inFile, line)) {
+      //   if (!line.empty()) {
+      //     add_history(line.c_str());
+      //   }
+      // }
+      // inFile.close();
+    }
+    /*
     ---------- check if any int argument is provided to history command ------------
     */
     if (find_if(input.begin(), input.end(), ::isdigit) != input.end()) {
@@ -234,7 +260,6 @@ void runBuiltin(string& cmd, string& input) {
     if (input == "history") {
       history();                                      // prints all the commands in history.txt
     }
-  }
 }
 
 // extracts all external commands from $PATH
