@@ -657,7 +657,6 @@ void run(string& input) {
     else {
         // no redirection: just hand off to /bin/sh
         system(input.c_str());
-        cout << endl;
     }
   }
 
