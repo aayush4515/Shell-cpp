@@ -65,11 +65,10 @@ int main() {
 
   using_history();                     // enable ↑ / ↓ history
 
-  // start the shell
-  repl();
-
   // clear history.txt
   ofstream outFile("history.txt");
   outFile.close();
 
+  // start the shell
+  repl();
 }
