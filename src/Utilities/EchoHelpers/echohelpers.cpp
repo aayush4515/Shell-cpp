@@ -224,32 +224,32 @@ bool hasBackslashOutsideQuotes(const std::string& raw)
 
 
 
-// // checks if a string is within single quotes
-// bool isSingleQuoted(string str) {
-//     // size_t first = str.find('\'');
-//     // if (first == string::npos) return false;
+// checks if a string is within single quotes
+bool isSingleQuoted(string str) {
+    // size_t first = str.find('\'');
+    // if (first == string::npos) return false;
 
-//     // size_t second = str.find('\'', first + 1);
-//     // return second != string::npos;
+    // size_t second = str.find('\'', first + 1);
+    // return second != string::npos;
 
-//     if ((str.at(0) == '\'') && (str.at(str.length() - 1) == '\'')) {
-//         return true;
-//     }
-//     return false;
-// }
-// // checks if a string is within double quotes
-// bool isDoubleQuoted(string str) {
-// //   size_t first = str.find('\"');
-// //   if (first == string::npos) return false;
+    if ((str.at(0) == '\'') && (str.at(str.length() - 1) == '\'')) {
+        return true;
+    }
+    return false;
+}
+// checks if a string is within double quotes
+bool isDoubleQuoted(string str) {
+//   size_t first = str.find('\"');
+//   if (first == string::npos) return false;
 
-// //   size_t second = str.find('\"', first + 1);
-// //   return second != string::npos;
+//   size_t second = str.find('\"', first + 1);
+//   return second != string::npos;
 
-//     if ((str.at(0) == '"') && (str.at(str.length() - 1) == '"')) {
-//         return true;
-//     }
-//     return false;
-// }
+    if ((str.at(0) == '"') && (str.at(str.length() - 1) == '"')) {
+        return true;
+    }
+    return false;
+}
 
 
 // // checks if a string is adjacent-quotes; works for both single and double quotes

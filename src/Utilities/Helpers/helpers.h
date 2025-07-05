@@ -11,6 +11,8 @@
 
 using namespace std;
 
+bool hasPipe(string& input);
+vector<std::string> splitOnPipe(const string& input);
 vector<string> extractPath ();
 void searchPath (string targetFile);
 bool isExternalExecutableCommand(const string& cmd);

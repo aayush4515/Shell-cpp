@@ -36,6 +36,15 @@ void repl() {
 
     string inp = string(input);
 
+    if (hasPipe(inp)) {
+      vector<string> stages = splitOnPipe(inp);
+      for (const auto& stage : stages) {
+        cout << stage << endl;
+      }
+    }
+
+    continue;
+
     // the exit bulletin
     if (inp == "exit 0") {
       return;

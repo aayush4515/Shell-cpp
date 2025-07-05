@@ -14,6 +14,55 @@
 
 namespace fs = filesystem;
 
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+
+bool hasPipe(string& input) {
+  if (input.find('|') != string::npos) {
+    bool inSingle = false;
+    bool inDouble = false;
+
+    for (char ch : input) {
+      if (ch == '\'' && !inSingle) {
+        inSingle = !inSingle;
+      } else if (inSingle && ch == '|') {
+        return false;
+      }
+
+      if (ch == '"' && !inDouble) {
+        inDouble = !inDouble;
+      } else if (inDouble && ch == '|') {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+vector<string> splitOnPipe(const string& input) {
+    vector<std::string> result;
+    stringstream ss(input);
+    string segment;
+
+    while (getline(ss, segment, '|')) {
+        // Trim leading/trailing spaces
+        segment.erase(segment.begin(), find_if(segment.begin(), segment.end(), [](int ch) {
+            return !isspace(ch);
+        }));
+        segment.erase(find_if(segment.rbegin(), segment.rend(), [](int ch) {
+            return !isspace(ch);
+        }).base(), segment.end());
+
+        result.push_back(segment);
+    }
+
+    return result;
+}
+
+
 bool isValidCommand(string cmd) {
   vector<string> commands = {
     "cd", "ls", "echo", "exit", "pwd", "type", "mkdir", "rmdir", "touch",
