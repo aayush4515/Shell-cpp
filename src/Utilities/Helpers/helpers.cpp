@@ -476,9 +476,7 @@ void run(string& input) {
     }
 
     // 4) Run the builtin; all cout and cerr are redirected to the respective files
-    if (redirectStdout || redirectStdout || appendStdout || appendStderr) {
-      runBuiltin(command, input);
-    }
+    runBuiltin(command, input);
 
     // Flush and restore stdout and stderr
     if (redirectStdout) {
