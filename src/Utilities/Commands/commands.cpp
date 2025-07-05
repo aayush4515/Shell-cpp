@@ -91,3 +91,7 @@ void type(string& input) {
     searchPath(typeArg);
   }
 }
+
+void history() {
+  displayHistory();
+}

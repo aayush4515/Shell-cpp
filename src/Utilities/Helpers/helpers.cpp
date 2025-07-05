@@ -8,16 +8,47 @@
 #include <sstream>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <fstream>
 
 #include "../Commands/commands.h"
 #include "../Autocompletion/autocompletion.h"
 
 namespace fs = filesystem;
 
-#include <vector>
-#include <string>
-#include <sstream>
-#include <algorithm>
+void addToHistory(string& input) {
+  // open the history.txt file in append mode
+  ofstream outFile("history.txt", ios::app);
+
+  // write to the history.txt file
+  if (outFile.is_open() && input != "") {
+    outFile << input << endl;
+  }
+  else {
+    // SKIP
+    return;
+  }
+  outFile.close();
+}
+
+void displayHistory() {
+  // stores each line of the history file
+  string line;
+
+  // line number
+  int lineNumber = 0;
+
+  // open the history.txt file for reading
+  ifstream inFile("history.txt");
+
+  // read from the history.txt file and display the history
+  while (getline(inFile, line)) {
+    lineNumber++;
+    cout << '\t' << lineNumber << ' ' << line << endl;
+  }
+}
 
 void setup_redirs(bool rdOut,  bool rdErr,
   bool apOut,  bool apErr,
@@ -106,7 +137,7 @@ bool isValidCommand(string cmd) {
 }
 
 bool isBuiltin(const string& cmd) {
-  if (cmd == "echo" || cmd == "cd" || cmd == "type" || cmd == "pwd" || cmd == "exit") {
+  if (cmd == "echo" || cmd == "cd" || cmd == "type" || cmd == "pwd" || cmd == "exit" || cmd == "history") {
     return true;
   }
   return false;
@@ -128,6 +159,10 @@ void runBuiltin(string& cmd, string& input) {
   }
   else if (cmd == "cd") {
     cd(input);
+    return;
+  }
+  else if (cmd == "history") {
+    history();
     return;
   }
 }

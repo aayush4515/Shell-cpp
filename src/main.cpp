@@ -23,6 +23,8 @@ void repl() {
     // getline(cin, input);
 
     char* input = readline("$ ");
+    string inp = string(input);
+    addToHistory(inp);
 
     // EOF / Ctrl-D
     if (!input) {
@@ -34,7 +36,7 @@ void repl() {
       add_history(input);
     }
 
-    string inp = string(input);
+
 
     // the exit bulletin
     if (inp == "exit 0") {

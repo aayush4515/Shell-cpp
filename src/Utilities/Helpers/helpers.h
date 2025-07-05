@@ -22,5 +22,7 @@ bool isValidCommand(string cmd);
 bool isBuiltin(const string& cmd);
 void runBuiltin(string& cmd, string& input);
 void run(string& input);
+void addToHistory(string& input);
+void displayHistory();
 
 #endif

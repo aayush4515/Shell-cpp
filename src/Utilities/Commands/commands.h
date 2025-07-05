@@ -13,5 +13,6 @@ void pwd();
 void echo(string& input);
 void type(string& input);
 void cd(string& input);
+void history();
 
 #endif
