@@ -382,7 +382,7 @@ void run(string& input) {
 
   // is it a built-in command?
   // if (isBuiltin(command)) {
-    if (hasRedirectionOrAppend) {
+    if (hasRedirectionOrAppend && isBuiltin(command)) {
       cout << "hereA" << endl;
     /*
 
