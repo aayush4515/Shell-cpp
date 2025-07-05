@@ -362,8 +362,6 @@ void run(string& input) {
             }
             else {
                 // cerr << stageCmd << ": builtin not found\n";
-                cout << "here" << endl;
-                cout << "external command: " << stageCmd << endl;
                 //system(stageCmd.c_str());
                 system(input.c_str());
             }
