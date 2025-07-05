@@ -32,8 +32,8 @@ char* command_generator(const char* text, int state)
 char** completer(const char* text, int start, int end)
 {
     // took an hour and half to figure this out, documentation helped!
-    // rl_delete_text(start, end);
-    // rl_replace_line("", 0);
+    rl_delete_text(start, end);
+    rl_replace_line("", 0);
     /* If we are at the start of the line, complete shell commands.
        Otherwise fall back to default filename completion.              */
     if (start == 0) {
