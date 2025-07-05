@@ -1,0 +1,3 @@
+echo hehe
+echo hehe
+clear
