@@ -740,10 +740,10 @@ void run(string &input) {
         perror("fork");
       }
       else if (pid == 0) {
-        setup_redirs(redirectStdout, redirectStderr,
-                     appendStdout, appendStderr,
-                     outRedirectPath, errRedirectPath,
-                     appendOutPath, appendErrPath);
+        // //setup_redirs(redirectStdout, redirectStderr,
+        //              appendStdout, appendStderr,
+        //              outRedirectPath, errRedirectPath,
+        //              appendOutPath, appendErrPath);
         // // CHILD: set up redirections
         // if (redirectStdout) {
         //   int fd = open(outRedirectPath.c_str(),
