@@ -18,6 +18,12 @@ void repl() {
   // stores the input
   //string input;
 
+  // extract path from HISTFILE variable
+  const char* envVar = "HISTFILE";
+  string path = string(getenv(envVar));
+  // read history from HISTFILE and load into history memory
+  read_history(path.c_str());
+
   // REPL
   while (true) {
     //   cout << "$ ";
