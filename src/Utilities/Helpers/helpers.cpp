@@ -18,6 +18,8 @@
 
 namespace fs = filesystem;
 
+
+int last_appended_index = 0;
 extern vector<string> cmdHistory;
 
 void addToHistory(string& input) {
@@ -225,21 +227,41 @@ void runBuiltin(string& cmd, string& input) {
       string path = input.substr(start, end - start);
 
       // add history to <path> file
-      ofstream outFile(path, ios::app);
+      ofstream outFile(path);
       if (outFile.is_open()) {
         write_history(path.c_str());
         outFile.close();
       }
     }
-      // string line;
-      // ifstream inFile(path);
+    // string line;
+    // ifstream inFile(path);
 
-      // while(getline(inFile, line)) {
-      //   if (!line.empty()) {
-      //     add_history(line.c_str());
-      //   }
-      // }
-      // inFile.close();
+    // while(getline(inFile, line)) {
+    //   if (!line.empty()) {
+    //     add_history(line.c_str());
+    //   }
+    // }
+    // inFile.close();
+    /*
+    ---------- check if -a option is provided to the history command------------
+    */
+    if (input.find("-a") != string::npos) {
+
+
+
+      // extract the path to the history file
+      size_t start = input.find("-a") + 3;
+      size_t end = input.length();
+      string path = input.substr(start, end - start);
+
+      int total = history_length;
+      int new_entries = total - last_appended_index;
+
+      // add history to <path> file
+      if (new_entries > 0) {
+        append_history(new_entries, path.c_str());
+        last_appended_index = total;
+      }
     }
     /*
     ---------- check if any int argument is provided to history command ------------
@@ -260,6 +282,7 @@ void runBuiltin(string& cmd, string& input) {
     if (input == "history") {
       history();                                      // prints all the commands in history.txt
     }
+  }
 }
 
 // extracts all external commands from $PATH

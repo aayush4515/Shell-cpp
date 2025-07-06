@@ -1,0 +1,7 @@
+echo init1
+echo init2
+echo cmd
+history -a history.txt
+echo hehe
+echo haha
+history -a history.txt

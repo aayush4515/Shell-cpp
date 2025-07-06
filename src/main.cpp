@@ -66,8 +66,8 @@ int main() {
   using_history();                     // enable ↑ / ↓ history
 
   // clear history.txt
-  ofstream outFile("history.txt");
-  outFile.close();
+  // ofstream outFile("history.txt");
+  // outFile.close();
 
   // start the shell
   repl();
