@@ -331,7 +331,7 @@ vector<string> extractPath () {
   const char* envVariable = "PATH";
   const char* pathCStr = getenv(envVariable);
   if (pathCStr == nullptr) {
-    return {}; // return empty vector
+    return paths; // return empty vector
   }
   string path = string(pathCStr);
   //string path = string(getenv(envVariable));
