@@ -153,16 +153,15 @@ vector<string> splitOnPipe(const string &input) {
 
   while (getline(ss, segment, '|')) {
     // Trim leading/trailing spaces
-    segment.erase(segment.begin(), find_if(segment.begin(), segment.end(), [](int ch)
-                                           { return !isspace(ch); }));
-    segment.erase(find_if(segment.rbegin(), segment.rend(), [](int ch)
-                          { return !isspace(ch); })
-                      .base(),
-                  segment.end());
+    segment.erase(segment.begin(), find_if(segment.begin(), segment.end(), [](int ch)  {
+      return !isspace(ch);
+    }));
+    segment.erase(find_if(segment.rbegin(), segment.rend(), [](int ch){
+      return !isspace(ch);
+    }).base(), segment.end());
 
     result.push_back(segment);
   }
-
   return result;
 }
 
@@ -580,94 +579,99 @@ void run(string &input) {
     int savedStdout = -1, savedStderr = -1;
     int outFd = -1, errFd = -1, appendFd = -1, appendErrFd = -1;
 
-    // Redirect stdout if requested
-    if (redirectStdout) {
-      // 1) Save the real stdout
-      savedStdout = dup(STDOUT_FILENO);
-      if (savedStdout < 0) {
-        perror("dup"); // failed to save stdout
-      }
+    setup_redirs(redirectStdout, redirectStderr,
+                 appendStdout, appendStderr,
+                 outRedirectPath, errRedirectPath,
+                 appendOutPath, appendErrPath);
 
-      // 2) Open (or create) the target file
-      outFd = open(
-          outRedirectPath.c_str(),
-          O_CREAT | O_TRUNC | O_WRONLY,
-          0644);
-      if (outFd < 0) {
-        perror("open"); // failed to open file
-      }
-      else {
-        // 3) Redirect stdout -> file
-        if (dup2(outFd, STDOUT_FILENO) < 0)
-        {
-          perror("dup2"); // failed to redirect
-        }
-        close(outFd); // no longer needed
-      }
-    }
+    // // Redirect stdout if requested
+    // if (redirectStdout) {
+    //   // 1) Save the real stdout
+    //   savedStdout = dup(STDOUT_FILENO);
+    //   if (savedStdout < 0) {
+    //     perror("dup"); // failed to save stdout
+    //   }
 
-    // Redirect stderr if requested
-    if (redirectStderr) {
-      // save the real stderr
-      savedStderr = dup(STDERR_FILENO);
-      if (savedStderr < 0) {
-        perror("dup"); // failed to save stderr
-      }
+    //   // 2) Open (or create) the target file
+    //   outFd = open(
+    //       outRedirectPath.c_str(),
+    //       O_CREAT | O_TRUNC | O_WRONLY,
+    //       0644);
+    //   if (outFd < 0) {
+    //     perror("open"); // failed to open file
+    //   }
+    //   else {
+    //     // 3) Redirect stdout -> file
+    //     if (dup2(outFd, STDOUT_FILENO) < 0)
+    //     {
+    //       perror("dup2"); // failed to redirect
+    //     }
+    //     close(outFd); // no longer needed
+    //   }
+    // }
 
-      // open or create the target file
-      errFd = open(errRedirectPath.c_str(),
-                   O_CREAT | O_TRUNC | O_WRONLY, 0644);
-      if (errFd < 0) {
-        perror("open"); // failed to open file
-      }
-      else{
-        // redirect stderr -> file
-        if (dup2(errFd, STDERR_FILENO) < 0)
-        {
-          perror("dup2"); // failed to redirect
-        }
-        close(errFd); // no longer needed
-      }
-    }
+    // // Redirect stderr if requested
+    // if (redirectStderr) {
+    //   // save the real stderr
+    //   savedStderr = dup(STDERR_FILENO);
+    //   if (savedStderr < 0) {
+    //     perror("dup"); // failed to save stderr
+    //   }
 
-    // process stdout append if requested
-    if (appendStdout) {
-      savedStdout = dup(STDOUT_FILENO);
-      if (savedStdout < 0) {
-        perror("dup");
-      }
-      appendFd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-      if (appendFd < 0) {
-        perror("append");
-      }
-      else {
-        if (dup2(appendFd, STDOUT_FILENO) < 0)
-        {
-          perror("dup2");
-        }
-        close(appendFd);
-      }
-    }
+    //   // open or create the target file
+    //   errFd = open(errRedirectPath.c_str(),
+    //                O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    //   if (errFd < 0) {
+    //     perror("open"); // failed to open file
+    //   }
+    //   else{
+    //     // redirect stderr -> file
+    //     if (dup2(errFd, STDERR_FILENO) < 0)
+    //     {
+    //       perror("dup2"); // failed to redirect
+    //     }
+    //     close(errFd); // no longer needed
+    //   }
+    // }
 
-    // process stderr append if requested
-    if (appendStderr) {
-      savedStderr = dup(STDERR_FILENO);
-      if (savedStderr < 0) {
-        perror("dup");
-      }
+    // // process stdout append if requested
+    // if (appendStdout) {
+    //   savedStdout = dup(STDOUT_FILENO);
+    //   if (savedStdout < 0) {
+    //     perror("dup");
+    //   }
+    //   appendFd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+    //   if (appendFd < 0) {
+    //     perror("append");
+    //   }
+    //   else {
+    //     if (dup2(appendFd, STDOUT_FILENO) < 0)
+    //     {
+    //       perror("dup2");
+    //     }
+    //     close(appendFd);
+    //   }
+    // }
 
-      appendErrFd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-      if (appendErrFd < 0) {
-        perror("append");
-      }
-      else {
-        if (dup2(appendErrFd, STDERR_FILENO) < 0)
-        {
-          perror("dup2");
-        }
-        close(appendErrFd);
-      }
-    }
+    // // process stderr append if requested
+    // if (appendStderr) {
+    //   savedStderr = dup(STDERR_FILENO);
+    //   if (savedStderr < 0) {
+    //     perror("dup");
+    //   }
+
+    //   appendErrFd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+    //   if (appendErrFd < 0) {
+    //     perror("append");
+    //   }
+    //   else {
+    //     if (dup2(appendErrFd, STDERR_FILENO) < 0)
+    //     {
+    //       perror("dup2");
+    //     }
+    //     close(appendErrFd);
+    //   }
+    // }
 
     // 4) Run the builtin; all cout and cerr are redirected to the respective files
     runBuiltin(command, input);
@@ -740,65 +744,15 @@ void run(string &input) {
         perror("fork");
       }
       else if (pid == 0) {
-        // //setup_redirs(redirectStdout, redirectStderr,
-        //              appendStdout, appendStderr,
-        //              outRedirectPath, errRedirectPath,
-        //              appendOutPath, appendErrPath);
-        // // CHILD: set up redirections
-        // if (redirectStdout) {
-        //   int fd = open(outRedirectPath.c_str(),
-        //                 O_CREAT | O_TRUNC | O_WRONLY, 0644);
-        //   if (fd < 0) {
-        //     perror("open stdout");
-        //     _exit(1);
-        //   }
-        //   if (dup2(fd, STDOUT_FILENO) < 0) {
-        //     perror("dup2 stdout");
-        //     _exit(1);
-        //   }
-        //   close(fd);
-        // }
-        // if (redirectStderr) {
-        //   // cout << "Redirecterr path: " << errRedirectPath << endl;
-        //   int fd = open(errRedirectPath.c_str(),
-        //                 O_CREAT | O_TRUNC | O_WRONLY, 0644);
-        //   if (fd < 0) {
-        //     // perror("open stderr");
-        //     _exit(1);
-        //   }
-        //   if (dup2(fd, STDERR_FILENO) < 0) {
-        //     perror("dup2 stderr");
-        //     _exit(1);
-        //   }
-        //   close(fd);
-        // }
-        // if (appendStdout) {
-        //   int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-
-        //   if (fd < 0) {
-        //     _exit(1);
-        //   }
-        //   if (dup2(fd, STDOUT_FILENO) < 0) {
-        //     perror("dup2 stdout");
-        //     _exit(1);
-        //   }
-        //   close(fd);
-        // }
-        // if (appendStderr) {
-        //   int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-
-        //   if (fd < 0) {
-        //     _exit(1);
-        //   }
-        //   if (dup2(fd, STDERR_FILENO) < 0) {
-        //     perror("dup2 stderr");
-        //     _exit(1);
-        //   }
-        //   close(fd);
-        // }
+        // CHILD: set up redirections
+        setup_redirs(redirectStdout, redirectStderr,
+                     appendStdout, appendStderr,
+                     outRedirectPath, errRedirectPath,
+                     appendOutPath, appendErrPath);
 
         // Execute the command
         execvp(argv[0], argv.data());
+
         // if execvp returns, it failed
         perror("execvp");
         _exit(1);
