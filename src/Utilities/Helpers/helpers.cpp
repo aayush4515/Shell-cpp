@@ -329,7 +329,12 @@ vector<string> extractPath () {
 
   // extracting the path variable
   const char* envVariable = "PATH";
-  string path = string(getenv(envVariable));
+  const char* pathCStr = getenv(envVariable);
+  if (pathCStr == nullptr) {
+    return {}; // return empty vector
+  }
+  string path = string(pathCStr);
+  //string path = string(getenv(envVariable));
 
   // splitting the path variables into directories and storing in the vector pathDirectories
 
