@@ -554,8 +554,8 @@ void run(string& input) {
             else {
                 // cerr << stageCmd << ": builtin not found\n";
                 //system(stageCmd.c_str());
-                //system(input.c_str());
-                system(stages[i].c_str());
+                system(input.c_str());
+                //system(stages[i].c_str());
             }
             _exit(0);                             // success
         }

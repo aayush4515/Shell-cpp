@@ -25,15 +25,16 @@ void repl() {
     // getline(cin, input);
 
     char* input = readline("$ ");
-    string inp = string(input);
-    //addToHistory(inp);                // adds to history.txt
 
     // EOF / Ctrl-D
     if (!input) {
       break;
     }
 
-     // don’t store empty lines
+    string inp = string(input);
+    //addToHistory(inp);                // adds to history.txt
+
+    // don’t store empty lines
     if (*input) {
       add_history(input);             // adds to the memory using readline library
     }
@@ -41,6 +42,7 @@ void repl() {
     // the exit bulletin
     if (inp == "exit 0") {
       return;
+      free(input);
     }
 
     // process the standard input and run commands
@@ -64,11 +66,11 @@ int main() {
 
   using_history();                     // enable ↑ / ↓ history
 
-  // extract path from HISTFILE variable
-  const char* envVar = "HISTFILE";
-  string path = string(getenv(envVar));
-  // read history from HISTFILE and load into history memory
-  read_history(path.c_str());
+  // ✅ Safely get HISTFILE and read history
+  const char* hf = getenv("HISTFILE");
+  if (hf != nullptr && hf[0] != '\0') {
+    read_history(hf);
+  }
 
   // clear history.txt
   // ofstream outFile("history.txt");
