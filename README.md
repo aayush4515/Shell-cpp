@@ -102,6 +102,7 @@ shell-cpp/
 
 - C++ compiler (`g++`)
 - `readline` library installed (`sudo apt install libreadline-dev` on Debian/Ubuntu)
+- Edit run.sh using Nano or Vi and modify readline library's path
 
 ### 🧪 Build and Run
 
@@ -109,6 +110,7 @@ shell-cpp/
 git clone https://github.com/aayush4515/Shell-cpp.git
 cd Shell-cpp
 ./run.sh
+./src/main
 ```
 
 ## 🙏 Acknowledgements
