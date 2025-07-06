@@ -92,31 +92,23 @@ void setup_redirs(bool rdOut, bool rdErr,
                   const std::string &appendErrPath) {
   if (rdOut) { /* stdout 1> */
     int fd = open(outPath.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
-    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0)
-      perror("redirect 1>");
-    if (fd >= 0)
-      close(fd);
+    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0) perror("redirect 1>");
+    if (fd >= 0) close(fd);
   }
   if (rdErr) { /* stderr 2> */
     int fd = open(errPath.c_str(), O_CREAT | O_TRUNC | O_WRONLY, 0644);
-    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0)
-      perror("redirect 2>");
-    if (fd >= 0)
-      close(fd);
+    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0) perror("redirect 2>");
+    if (fd >= 0) close(fd);
   }
   if (apOut) { /* stdout >> */
     int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0)
-      perror("append 1>>");
-    if (fd >= 0)
-      close(fd);
+    if (fd < 0 || dup2(fd, STDOUT_FILENO) < 0) perror("append 1>>");
+    if (fd >= 0) close(fd);
   }
   if (apErr) { /* stderr 2>> */
     int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
-    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0)
-      perror("append 2>>");
-    if (fd >= 0)
-      close(fd);
+    if (fd < 0 || dup2(fd, STDERR_FILENO) < 0) perror("append 2>>");
+    if (fd >= 0) close(fd);
   }
 }
 
@@ -567,8 +559,7 @@ void run(string &input) {
     return;
   }
 
-  // is it a built-in command?
-  // if (isBuiltin(command)) {
+  // is it a built-in command and has redirections?
   if (hasRedirectionOrAppend && isBuiltin(command)) {
     /*
 
@@ -713,14 +704,12 @@ void run(string &input) {
       }
       close(savedStderr);
     }
-
-    // run builtin if none of the above conditions meet
-    // runBuiltin(command, input);
   }
-  // is it an external exe command?
+  // is it a built-in command
   else if (isBuiltin(command)) {
     runBuiltin(command, input);
   }
+  // is it an external exe command?
   else if (isExternalExecutableCommand(command)) {
     if (redirectStdout || redirectStderr || appendStdout || appendStderr) {
       // 1) Split the trimmed input into arguments
@@ -759,10 +748,6 @@ void run(string &input) {
       }
       else {
         // PARENT: wait
-        // int status;
-        // if (waitpid(pid, &status, 0) < 0) {
-        //     perror("waitpid");
-        // }
         if (wait(0) == 1) {
           perror("wait");
         }

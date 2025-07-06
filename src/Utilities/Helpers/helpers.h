@@ -19,8 +19,8 @@ bool isExternalExecutableCommand(const string& cmd);            // determines is
 void runBuiltin(string& cmd, string& input);                    // runs a built-in command
 void run(string& input);                                        // processes and runs the input string, wraps runBuiltin() function
 void addToHistory(string& input);                               // adds command history to external file
-void displayHistory();                                          // displays in-built history to stdout
-void displayHistory(int n);                                     // displays in-built history to stdout -> last 'n' lines
+void displayHistory();                                          // displays external file history to stdout
+void displayHistory(int n);                                     // displays external file history to stdout -> last 'n' lines
 void searchPath (string targetFile);                            // searches the $PATH varuable for a targetFile
 
 string extractCommand(const string& input);                     // extracts the command from input string
