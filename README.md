@@ -58,7 +58,8 @@ This shell project was developed as a deep dive into systems programming and the
 
 ## 📁 Project Structure
 
-shell-project/
+``` sh
+shell-cpp/
 │
 ├── main.cpp # Entry point with REPL
 ├── commands/ # Built-in command implementations
@@ -69,6 +70,7 @@ shell-project/
 ├── headers/ # Header files for modularity
 ├── Makefile # Build script
 └── README.md # This file
+```
 
 ---
 
