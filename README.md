@@ -3,14 +3,12 @@
 <img src="https://img.shields.io/github/last-commit/aayush4515/Shell-cpp?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
 <img src="https://img.shields.io/github/languages/top/aayush4515/Shell-cpp?style=flat&color=0080ff" alt="repo-top-language">
 <img src="https://img.shields.io/github/languages/count/aayush4515/Shell-cpp?style=flat&color=0080ff" alt="repo-language-count">
-</div>
 
-<div align="right"></div>
 <img src="https://img.shields.io/badge/GNU%20Bash-4EAA25.svg?style=flat&logo=GNU-Bash&logoColor=white" alt="GNU%20Bash">
 <img src="https://img.shields.io/badge/C++-00599C.svg?style=flat&logo=C++&logoColor=white" alt="C++">
 <img src="https://img.shields.io/badge/CMake-064F8C.svg?style=flat&logo=CMake&logoColor=white" alt="CMake">
-</div>
 
+</div>
 
 
 # 🐚 Custom UNIX Shell in C++
