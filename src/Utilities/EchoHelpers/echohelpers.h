@@ -8,20 +8,25 @@
 
 using namespace std;
 
-bool isSingleQuoted(string str);
-bool isDoubleQuoted(string str);
+/*
+    ---------- NOT USED ----------
+*/
+
 // bool isAdjacentQuoted (string str);
 // bool hasConsecutiveSpaces(string str);
 // bool isEmptyQuoted(string str, size_t& first, size_t& last);
 // string handleSingleQuotes(string str);
 // vector<string> tokenize(const string& line);
-
-string stripQuotesAndCollapse(const string& raw);
 // bool isEscapedQuote(const string& s, size_t pos);
 // bool isEscaped(const string& s, size_t pos);
-bool hasBackslashOutsideQuotes(const string& raw);
 // bool hasBackslashInsideDoubleQuotes(const string& raw);
-string processNonQuotedBackslashes(const string& raw);
 // string processBackslashInsideDoubleQuotes(const string& raw);
+// bool isSingleQuoted(string str);
+// bool isDoubleQuoted(string str);
+
+
+bool hasBackslashOutsideQuotes(const string& raw);                              // checks if a backslash lies outside quotes
+string stripQuotesAndCollapse(const string& raw);                               // processes quotes for echo command
+string processNonQuotedBackslashes(const string& raw);                          // processes backslash(es) outside of quotes
 
 #endif

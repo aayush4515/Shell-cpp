@@ -17,7 +17,7 @@
 using namespace std;
 namespace fs = filesystem;
 
-char* command_generator(const char* text, int state);
-char** completer(const char* text, int start, int end);
+char* command_generator(const char* text, int state);               // generates commands for autocompletion
+char** completer(const char* text, int start, int end);             // autocompletes the commands
 
 #endif

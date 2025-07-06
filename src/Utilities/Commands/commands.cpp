@@ -32,30 +32,6 @@ void cd(string& input) {
 
 }
 
-// void echo(string& input) {
-//   int start = input.find(' ') + 1;
-//   int end = input.length();
-//   int sizeOfEchoStr = end - start;
-
-//   string echoStr = input.substr(start, sizeOfEchoStr);
-
-//   // check if the string to be echoed contains single quotes
-//   if (isSingleQuoted(echoStr)) {
-//     echoStr = handleSingleQuotes(echoStr);
-//   }
-//   // else if (isDoubleQuoted) {
-//   //   echoStr = handleDoubleQuotes(echoStr);
-//   // }
-//   else if (hasConsecutiveSpaces(echoStr)){
-//     // consecutive spaces are collasped unless quoted
-//     size_t firstSpace = echoStr.find(' ');
-//     size_t lastSpace = echoStr.find_last_of(' ');
-//     echoStr = echoStr.substr(0, firstSpace) + echoStr.substr(lastSpace, echoStr.length() - lastSpace);
-//   }
-
-//   cout << echoStr << endl;
-// }
-
 void echo(string& input) {
     // 1. skip the command name itself
     size_t firstSpace = input.find_first_of(" \t");
@@ -68,7 +44,6 @@ void echo(string& input) {
     string echoStr = "";
 
     // check for backslash outside quotes
-
     if (hasBackslashOutsideQuotes(rawArgs)) {    // Does it have non-quoted backslash(es)?
       echoStr = processNonQuotedBackslashes(rawArgs);
     }

@@ -20,10 +20,7 @@ void repl() {
 
   // REPL
   while (true) {
-    //   cout << "$ ";
-    // // read the prompt
-    // getline(cin, input);
-
+    // read the prompt
     char* input = readline("$ ");
 
     // EOF / Ctrl-D
@@ -45,12 +42,8 @@ void repl() {
       free(input);
     }
 
-    // process the standard input and run commands
+    // process the standard input and run commands, then free the input
     run(inp);
-
-    // ready for next command
-    //input = "";
-
     free(input);
   }
 }
