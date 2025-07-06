@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/badge/C++-00599C.svg?style=flat&logo=C++&logoColor=white" alt="C++">
 <img src="https://img.shields.io/badge/CMake-064F8C.svg?style=flat&logo=CMake&logoColor=white" alt="CMake">
 
-# 🐚 Custom Shell in C++
+# 🐚 Custom UNIX Shell in C++
 
 A fully functional shell built from scratch using C++. This project mimics Unix-like shell behavior, supporting built-in commands, execution of external programs, history persistence, piping, redirection, autocompletion, and more.
 
