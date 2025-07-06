@@ -60,25 +60,22 @@ This shell project was developed as a deep dive into systems programming and the
 
 ``` sh
 shell-cpp/
-custom-shell/
 │
-├── src/ # Main source folder
+├── src/                # Main source folder
+│ ├── Utilities/        # Utility modules
+│ ├── Autocompletion/   # Tab completion logic
+│ ├── Commands/         # Built-in command implementations
+│ ├── EchoHelpers/      # Helpers specific to echo command
+│ └── Helpers/          # General helper functions
 │
-├── Utilities/ # Utility modules
-│ ├── Autocompletion/ # Tab completion logic
-│ ├── Commands/ # Built-in command implementations
-│ ├── EchoHelpers/ # Helpers specific to echo command
-│ └── Helpers/ # General helper functions
-│
-├── main.cpp # Entry point of the shell
-├── main # Compiled binary (optional)
-├── CMakeLists.txt # CMake build script
-├── codecrafters.yml # Codecrafters config
-├── history.txt # History persistence file
-├── README.md # Project documentation
-├── run.sh # Shell launch script
-├── your_program.sh # Program test wrapper
-├── vcpkg.json # Vcpkg dependency manifest
+├── main.cpp            # Entry point of the shell
+├── CMakeLists.txt      # CMake build script
+├── codecrafters.yml    # Codecrafters config
+├── history.txt         # History persistence file
+├── README.md           # Project documentation
+├── run.sh              # Shell launch script
+├── your_program.sh     # Program test wrapper
+├── vcpkg.json          # Vcpkg dependency manifest
 ├── vcpkg-configuration.json # Vcpkg config file
 ├── .gitattributes
 ├── .gitignore
@@ -96,10 +93,9 @@ custom-shell/
 ### 🧪 Build and Run
 
 ```bash
-git clone https://github.com/yourusername/custom-shell-cpp.git
-cd custom-shell-cpp
-make
-./myshell
+git clone https://github.com/aayush4515/Shell-cpp.git
+cd Shell-cpp
+./run.sh
 ```
 
 ## 🙏 Acknowledgements
