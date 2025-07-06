@@ -740,58 +740,62 @@ void run(string &input) {
         perror("fork");
       }
       else if (pid == 0) {
-        // CHILD: set up redirections
-        if (redirectStdout) {
-          int fd = open(outRedirectPath.c_str(),
-                        O_CREAT | O_TRUNC | O_WRONLY, 0644);
-          if (fd < 0) {
-            perror("open stdout");
-            _exit(1);
-          }
-          if (dup2(fd, STDOUT_FILENO) < 0) {
-            perror("dup2 stdout");
-            _exit(1);
-          }
-          close(fd);
-        }
-        if (redirectStderr) {
-          // cout << "Redirecterr path: " << errRedirectPath << endl;
-          int fd = open(errRedirectPath.c_str(),
-                        O_CREAT | O_TRUNC | O_WRONLY, 0644);
-          if (fd < 0) {
-            // perror("open stderr");
-            _exit(1);
-          }
-          if (dup2(fd, STDERR_FILENO) < 0) {
-            perror("dup2 stderr");
-            _exit(1);
-          }
-          close(fd);
-        }
-        if (appendStdout) {
-          int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+        setup_redirs(redirectStdout, redirectStderr,
+                     appendStdout, appendStderr,
+                     outRedirectPath, errRedirectPath,
+                     appendOutPath, appendErrPath);
+        // // CHILD: set up redirections
+        // if (redirectStdout) {
+        //   int fd = open(outRedirectPath.c_str(),
+        //                 O_CREAT | O_TRUNC | O_WRONLY, 0644);
+        //   if (fd < 0) {
+        //     perror("open stdout");
+        //     _exit(1);
+        //   }
+        //   if (dup2(fd, STDOUT_FILENO) < 0) {
+        //     perror("dup2 stdout");
+        //     _exit(1);
+        //   }
+        //   close(fd);
+        // }
+        // if (redirectStderr) {
+        //   // cout << "Redirecterr path: " << errRedirectPath << endl;
+        //   int fd = open(errRedirectPath.c_str(),
+        //                 O_CREAT | O_TRUNC | O_WRONLY, 0644);
+        //   if (fd < 0) {
+        //     // perror("open stderr");
+        //     _exit(1);
+        //   }
+        //   if (dup2(fd, STDERR_FILENO) < 0) {
+        //     perror("dup2 stderr");
+        //     _exit(1);
+        //   }
+        //   close(fd);
+        // }
+        // if (appendStdout) {
+        //   int fd = open(appendOutPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
 
-          if (fd < 0) {
-            _exit(1);
-          }
-          if (dup2(fd, STDOUT_FILENO) < 0) {
-            perror("dup2 stdout");
-            _exit(1);
-          }
-          close(fd);
-        }
-        if (appendStderr) {
-          int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+        //   if (fd < 0) {
+        //     _exit(1);
+        //   }
+        //   if (dup2(fd, STDOUT_FILENO) < 0) {
+        //     perror("dup2 stdout");
+        //     _exit(1);
+        //   }
+        //   close(fd);
+        // }
+        // if (appendStderr) {
+        //   int fd = open(appendErrPath.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
 
-          if (fd < 0) {
-            _exit(1);
-          }
-          if (dup2(fd, STDERR_FILENO) < 0) {
-            perror("dup2 stderr");
-            _exit(1);
-          }
-          close(fd);
-        }
+        //   if (fd < 0) {
+        //     _exit(1);
+        //   }
+        //   if (dup2(fd, STDERR_FILENO) < 0) {
+        //     perror("dup2 stderr");
+        //     _exit(1);
+        //   }
+        //   close(fd);
+        // }
 
         // Execute the command
         execvp(argv[0], argv.data());
