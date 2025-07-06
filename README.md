@@ -112,4 +112,4 @@ cd Shell-cpp
 ```
 
 ## 🙏 Acknowledgements
-This shell was developed as part of a systems programming learning path inspired by Codecrafters' "Build Your Own Shell" challenge. Special thanks to open-source communities and documentation for insights into readline, shell parsing, and POSIX features.
+This shell was developed as part of a systems programming learning path inspired by Codecrafters'{https://app.codecrafters.io/courses/shell/overview}["Build Your Own Shell"] challenge. Special thanks to open-source communities and documentation for insights into readline, shell parsing, and POSIX features.
