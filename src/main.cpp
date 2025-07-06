@@ -66,16 +66,15 @@ int main() {
 
   using_history();                     // enable ↑ / ↓ history
 
-  // ✅ Safely get HISTFILE and read history
+  // safely get HISTFILE and read history
   const char* hf = getenv("HISTFILE");
   if (hf != nullptr && hf[0] != '\0') {
     read_history(hf);
   }
 
-  // clear history.txt
-  // ofstream outFile("history.txt");
-  // outFile.close();
-
   // start the shell
   repl();
+
+  // write the session history to HISTFILE
+  write_history(hf);
 }
