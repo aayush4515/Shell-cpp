@@ -60,16 +60,28 @@ This shell project was developed as a deep dive into systems programming and the
 
 ``` sh
 shell-cpp/
+custom-shell/
 │
-├── main.cpp # Entry point with REPL
-├── commands/ # Built-in command implementations
-│ ├── echo.cpp
-│ ├── cd.cpp
-│ └── ...
-├── utilities/ # Helpers: history, parser, autocompletion
-├── headers/ # Header files for modularity
-├── Makefile # Build script
-└── README.md # This file
+├── src/ # Main source folder
+│
+├── Utilities/ # Utility modules
+│ ├── Autocompletion/ # Tab completion logic
+│ ├── Commands/ # Built-in command implementations
+│ ├── EchoHelpers/ # Helpers specific to echo command
+│ └── Helpers/ # General helper functions
+│
+├── main.cpp # Entry point of the shell
+├── main # Compiled binary (optional)
+├── CMakeLists.txt # CMake build script
+├── codecrafters.yml # Codecrafters config
+├── history.txt # History persistence file
+├── README.md # Project documentation
+├── run.sh # Shell launch script
+├── your_program.sh # Program test wrapper
+├── vcpkg.json # Vcpkg dependency manifest
+├── vcpkg-configuration.json # Vcpkg config file
+├── .gitattributes
+├── .gitignore
 ```
 
 ---
