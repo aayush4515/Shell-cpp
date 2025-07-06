@@ -334,7 +334,6 @@ vector<string> extractPath () {
     return paths; // return empty vector
   }
   string path = string(pathCStr);
-  //string path = string(getenv(envVariable));
 
   // splitting the path variables into directories and storing in the vector pathDirectories
 
@@ -814,7 +813,6 @@ void run(string& input) {
         system(input.c_str());
     }
   }
-
   // output as invalid command
   else {
     cout << input << ": command not found" << endl;
